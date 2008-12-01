@@ -8,7 +8,7 @@ import jerklib.events.JoinCompleteEvent;
 import jerklib.events.MessageEvent;
 import jerklib.listeners.DefaultIRCEventListener;
 
-import org.jdamico.ircivelaclient.view.StaticMessages;
+import org.jdamico.ircivelaclient.view.StaticData;
 
 public class ListenConversation extends DefaultIRCEventListener implements Runnable {
 
@@ -30,20 +30,20 @@ public class ListenConversation extends DefaultIRCEventListener implements Runna
 	}
 
 	//TODO: change this as to not spam our channel
-    static final String CHANNEL_TO_JOIN = StaticMessages.channel;
+    static final String CHANNEL_TO_JOIN = StaticData.channel;
 	
 	public ListenConversation()
     {
 		
-		String nick = StaticMessages.nick;
-		if(StaticMessages.nick.equals(StaticMessages.teacher)){
-			StaticMessages.nick = "|"+nick;
+		String nick = StaticData.nick;
+		if(StaticData.nick.equals(StaticData.teacher)){
+			StaticData.nick = "|"+nick;
 		}
 		
 		
-		ConnectionManager manager = new ConnectionManager(new Profile(StaticMessages.nick, StaticMessages.nick+"_", StaticMessages.nick+"__", StaticMessages.nick+"___"));
+		ConnectionManager manager = new ConnectionManager(new Profile(StaticData.nick, StaticData.nick+"_", StaticData.nick+"__", StaticData.nick+"___"));
 
-        session = manager.requestConnection(StaticMessages.server);
+        session = manager.requestConnection(StaticData.server);
 
         session.addIRCEventListener(this);
         
@@ -76,7 +76,7 @@ public class ListenConversation extends DefaultIRCEventListener implements Runna
     protected void handleChannelMessage(MessageEvent event)
     {
     	
-        StaticMessages.chatMessage = event.getNick() + ": " + event.getMessage();
+        StaticData.chatMessage = event.getNick() + ": " + event.getMessage();
         setJce(event);
        
             try
@@ -95,7 +95,7 @@ public class ListenConversation extends DefaultIRCEventListener implements Runna
     protected void handlePrivateMessage(MessageEvent event)
     {
    
-    	StaticMessages.chatMessage = event.getNick() + ": [private] " + event.getMessage();
+    	StaticData.chatMessage = event.getNick() + ": [private] " + event.getMessage();
         setJce(event);
     }
 

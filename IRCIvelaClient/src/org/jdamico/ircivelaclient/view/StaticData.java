@@ -1,6 +1,6 @@
 package org.jdamico.ircivelaclient.view;
 
-public class StaticMessages {
+public class StaticData {
 	public static String chatMessage = "";
 	public static String clientMessage = "";
 	public static String teacher = null;
