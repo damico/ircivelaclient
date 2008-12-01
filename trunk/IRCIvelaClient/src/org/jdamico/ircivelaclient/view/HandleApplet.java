@@ -1,7 +1,6 @@
 package org.jdamico.ircivelaclient.view;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -30,39 +29,30 @@ import jerklib.ServerInformation;
 import jerklib.Session;
 import jerklib.examples.ListenConversation;
 
+import org.jdamico.ircivelaclient.config.Constants;
+
 public class HandleApplet extends JApplet implements Runnable {
 
 	/**
 	 * 
 	 */
 
-	public static int row = 0;
+	private static int row = 0;
 	private boolean connected = false;
-	
-
 	private static final long serialVersionUID = -97950894125721726L;
-	int width = 300, height = 300;
-	int i = 0;
-
-	// public static MessageEvent jce = null;
-	public static Session session;
-	public static ServerInformation si = null;
-	public static String serverName = "*";
-
-	// Frame f = null;
-	Thread t = null;
+	private int i = 0;
+	private static Session session;
+	private static ServerInformation si = null;
+	private static String serverName = "*";
+	private Thread t = null;
 	boolean threadSuspended;
-
-	private JScrollPane jS = null;
-	private JEditorPane tA = new JEditorPane();
-	private JButton b1 = new JButton(actionSend);
-	public static JTextArea msg = new JTextArea();
-	public static JComboBox nicks = new JComboBox();
+	private JScrollPane mainContentScrollPane = null;
+	private JEditorPane mainContentArea = new JEditorPane();
+	private JButton sendMessageButton = new JButton(actionSend);
+	private static JTextArea messageArea = new JTextArea();
+	private static JComboBox nicksComboBox = new JComboBox();
 	private Document doc = null;
 	private ListenConversation chatter = null;
-
-	// TextArea tA = new TextArea(400,400);
-
 	/**
 	 * http://forums.sun.com/thread.jspa?threadID=174214
 	 * 
@@ -73,75 +63,61 @@ public class HandleApplet extends JApplet implements Runnable {
 
 		System.out.println("init(): begin");
 
-		StaticMessages.server = getParameter("server");
-		StaticMessages.teacher = getParameter("teacher");
-		StaticMessages.channel = getParameter("channel");
-		StaticMessages.nick = getParameter("nick");
-
+		StaticData.server = getParameter(Constants.PARAM_SERVER);
+		StaticData.teacher = getParameter(Constants.PARAM_TEACHER);
+		StaticData.channel = getParameter(Constants.PARAM_CHANNEL);
+		StaticData.nick = getParameter(Constants.PARAM_NICK);
 		setLayout(null);
-
-		nicks.addItem("All");
-		
-		tA.setEditable(false);
-		tA.setContentType("html/text");
-		tA.setEditorKit(new HTMLEditorKit());
-
+		nicksComboBox.addItem(Constants.NICKSCOMBOBOX_FIRST_ELEMENT);
+		mainContentArea.setEditable(false);
+		mainContentArea.setContentType(Constants.MAINCONTENT_CONTENT_TYPE);
+		mainContentArea.setEditorKit(new HTMLEditorKit());
 		setVisible(true);
-
 		setBackground(Color.DARK_GRAY);
-		tA.setBackground(Color.WHITE);
-
-		b1.setText("Send");
-
-		tA.setSize(800, 390);
-		jS = new JScrollPane(tA);
+		mainContentArea.setBackground(Color.WHITE);
+		sendMessageButton.setText(Constants.SEND_BUTTON_NAME);
+		mainContentArea.setSize(800, 390);
+		mainContentScrollPane = new JScrollPane(mainContentArea);
 
 		/**
 		 * set text msg and send button disabled till complete connection
 		 */
-		msg.setEnabled(false);
-		b1.setEnabled(false);
+		messageArea.setEnabled(false);
+		sendMessageButton.setEnabled(false);
 		
 		
-		msg.addKeyListener(new java.awt.event.KeyAdapter() {
+		messageArea.addKeyListener(new java.awt.event.KeyAdapter() {
 			public void keyPressed(java.awt.event.KeyEvent evt) {
 				msgKeyPressed(evt);
 			}
 
 			private void msgKeyPressed(KeyEvent evt) {
-
-				if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-
-					sendMessage();
-
-				}
+				if (evt.getKeyCode() == KeyEvent.VK_ENTER) sendMessage();
 			}
 
 		});
 
-		add(jS);
-		add(msg);
-		add(b1);
-		add(nicks);
+		add(mainContentScrollPane);
+		add(messageArea);
+		add(sendMessageButton);
+		add(nicksComboBox);
 
-		jS.setBounds(5, 5, 800, 390);
-		tA.setBackground(Color.WHITE);
-		msg.setBounds(5, 400, 728, 70);
-		b1.setBounds(738, 435, 68, 33);
-		nicks.setBounds(738, 400, 68, 33);
+		mainContentScrollPane.setBounds(5, 5, 800, 390);
+		mainContentArea.setBackground(Color.WHITE);
+		messageArea.setBounds(5, 400, 728, 70);
+		sendMessageButton.setBounds(738, 435, 68, 33);
+		nicksComboBox.setBounds(738, 400, 68, 33);
 
-		appendText(tA, "<font color='green'>IRCIvelaClient 0.0.25a</font><br>");
+		appendText(mainContentArea, "<font color='green'>IRCIvelaClient 0.0.25a</font><br>");
 
 		System.out.println("init(): end");
 	}
 
-	// Executed when the applet is destroyed.
+
 	public void destroy() {
 		System.out.println("destroy()");
 	}
 
-	// Executed after the applet is created; and also whenever
-	// the browser returns to the page containing the applet.
 	public void start() {
 
 		chatter = new ListenConversation();
@@ -161,13 +137,11 @@ public class HandleApplet extends JApplet implements Runnable {
 
 	}
 
-	// Executed whenever the browser leaves the page containing the applet.
 	public void stop() {
 		System.out.println("stop(): begin");
 		threadSuspended = true;
 	}
 
-	// Executed within the thread that this applet created.
 	public void run() {
 
 		System.out.println("run(): begin");
@@ -182,13 +156,13 @@ public class HandleApplet extends JApplet implements Runnable {
 		try {
 			while (true) {
 				i++;
-				if (!oldMsg.equals(StaticMessages.chatMessage)) {
+				if (!oldMsg.equals(StaticData.chatMessage)) {
 
-					tA.scrollRectToVisible(new Rectangle(0,
-							tA.getBounds(null).height, 1, 1));
+					mainContentArea.scrollRectToVisible(new Rectangle(0,
+							mainContentArea.getBounds(null).height, 1, 1));
 
-					if (StaticMessages.chatMessage.contains("|"
-							+ StaticMessages.teacher)) {
+					if (StaticData.chatMessage.contains("|"
+							+ StaticData.teacher)) {
 						fontColor = "'red'";
 					} else {
 						fontColor = "'blue'";
@@ -205,33 +179,33 @@ public class HandleApplet extends JApplet implements Runnable {
 					msgTB_b = "</td><td>";
 					msgTB_c = "</td></tr></table>";
 
-					appendText(tA, msgTB_a + getTime() + msgTB_b
+					appendText(mainContentArea, msgTB_a + getTime() + msgTB_b
 							+ "<font color=" + fontColor + ">"
-							+ StaticMessages.chatMessage.replaceAll("|", "")
+							+ StaticData.chatMessage.replaceAll("|", "")
 							+ "</font>" + msgTB_c);
 					row++;
 
 					// jce = chatter.getJce();
-					tA.setFocusable(true);
-					tA.setVisible(true);
-					tA.setEnabled(true);
+					mainContentArea.setFocusable(true);
+					mainContentArea.setVisible(true);
+					mainContentArea.setEnabled(true);
 
 				}
 
-				oldMsg = StaticMessages.chatMessage;
-				tA.setBackground(Color.WHITE);
+				oldMsg = StaticData.chatMessage;
+				mainContentArea.setBackground(Color.WHITE);
 
 				t.sleep(2000); 
 				
 
 				if (serverName.length() > 2 && !isConnected()) {
-					msg.setEnabled(true);
-					msg.setEditable(true);
-					b1.setEnabled(true);
-					msg.setAutoscrolls(true);
+					messageArea.setEnabled(true);
+					messageArea.setEditable(true);
+					sendMessageButton.setEnabled(true);
+					messageArea.setAutoscrolls(true);
 					//msg.setWrapStyleWord(true);
 					setConnected(true);
-					msg.setText("");
+					messageArea.setText("");
 					
 				} else if(serverName.length() < 2) {
 					String connMessage = ".";
@@ -241,7 +215,7 @@ public class HandleApplet extends JApplet implements Runnable {
 						m = m + connMessage;
 						k++;
 					}
-					msg.setText("Connecting "+m);
+					messageArea.setText("Connecting "+m);
 				}
 				
 				if(isConnected()) setConnectedUsers();
@@ -283,19 +257,19 @@ public class HandleApplet extends JApplet implements Runnable {
 	}
 
 	public static void sendMessage() {
-		StaticMessages.clientMessage = msg.getText().replaceAll("|", "");
+		StaticData.clientMessage = messageArea.getText().replaceAll("|", "");
 		// jce.getChannel().say(StaticMessages.clientMessage);
-		Channel channel = session.getChannel(StaticMessages.channel);
-		if(nicks.getSelectedItem().equals("All")){
-			session.sayChannel(StaticMessages.clientMessage, channel);
+		Channel channel = session.getChannel(StaticData.channel);
+		if(nicksComboBox.getSelectedItem().equals("All")){
+			session.sayChannel(StaticData.clientMessage, channel);
 		} else {
-			session.sayPrivate(nicks.getSelectedItem().toString(), StaticMessages.clientMessage);
+			session.sayPrivate(nicksComboBox.getSelectedItem().toString(), StaticData.clientMessage);
 		}
 		
 		
-		StaticMessages.chatMessage = "<font color'#666666'>Me: "
-			+ StaticMessages.clientMessage + "</font>";
-		msg.setText("");
+		StaticData.chatMessage = "<font color'#666666'>Me: "
+			+ StaticData.clientMessage + "</font>";
+		messageArea.setText("");
 	}
 
 	public static Action actionSend = new AbstractAction() {
@@ -319,14 +293,14 @@ public class HandleApplet extends JApplet implements Runnable {
 	}
 	
 	public static void setConnectedUsers(){
-		Channel currentChannel = session.getChannel(StaticMessages.channel);
+		Channel currentChannel = session.getChannel(StaticData.channel);
 		List<String> connectedUsers = currentChannel.getNicks();
 		List<String> activeUsers = new ArrayList<String>();
-		for(int j = 0; j < nicks.getItemCount(); j++){
-			activeUsers.add(nicks.getItemAt(j).toString());
+		for(int j = 0; j < nicksComboBox.getItemCount(); j++){
+			activeUsers.add(nicksComboBox.getItemAt(j).toString());
 		}
 		for(int l = 0; l < connectedUsers.size(); l++){
-			if(!activeUsers.contains(connectedUsers.get(l))) nicks.addItem(connectedUsers.get(l));
+			if(!activeUsers.contains(connectedUsers.get(l))) nicksComboBox.addItem(connectedUsers.get(l));
 		}
 	}
 }
