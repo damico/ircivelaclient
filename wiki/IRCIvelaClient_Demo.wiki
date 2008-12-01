@@ -1,0 +1,1 @@
+In order to test IRCIvelaClient go to: [http://dcon.com.br/ircivelaclient]
