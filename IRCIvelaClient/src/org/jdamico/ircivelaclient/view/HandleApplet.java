@@ -6,10 +6,7 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
-import java.text.Format;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -30,6 +27,7 @@ import jerklib.Session;
 import jerklib.examples.ListenConversation;
 
 import org.jdamico.ircivelaclient.config.Constants;
+import org.jdamico.ircivelaclient.util.IRCIvelaClientStringUtils;
 
 public class HandleApplet extends JApplet implements Runnable {
 
@@ -73,7 +71,12 @@ public class HandleApplet extends JApplet implements Runnable {
 		mainContentArea.setContentType(Constants.MAINCONTENT_CONTENT_TYPE);
 		mainContentArea.setEditorKit(new HTMLEditorKit());
 		setVisible(true);
-		setBackground(Color.DARK_GRAY);
+		String hexColor = getParameter(Constants.PARAM_BGCOLOR);
+		String strColor = "FDF1D9";
+		int hexConverted = 0;
+		hexConverted = Integer.parseInt(strColor, 16);
+		Color bColor = Color.decode(String.valueOf(hexConverted));
+		this.setBackground(bColor);
 		mainContentArea.setBackground(Color.WHITE);
 		sendMessageButton.setText(Constants.SEND_BUTTON_NAME);
 		mainContentArea.setSize(800, 390);
@@ -83,6 +86,9 @@ public class HandleApplet extends JApplet implements Runnable {
 		 * set text msg and send button disabled till complete connection
 		 */
 		messageArea.setEnabled(false);
+		messageArea.setAutoscrolls(true);
+		messageArea.setLineWrap(true);
+		messageArea.setWrapStyleWord(false);
 		sendMessageButton.setEnabled(false);
 		
 		
@@ -108,7 +114,7 @@ public class HandleApplet extends JApplet implements Runnable {
 		sendMessageButton.setBounds(738, 435, 68, 33);
 		nicksComboBox.setBounds(738, 400, 68, 33);
 
-		appendText(mainContentArea, "<font color='green'>IRCIvelaClient 0.0.25a</font><br>");
+		appendText(mainContentArea, IRCIvelaClientStringUtils.singleton().showVersion());
 
 		System.out.println("init(): end");
 	}
@@ -146,12 +152,9 @@ public class HandleApplet extends JApplet implements Runnable {
 
 		System.out.println("run(): begin");
 
-		String oldMsg = "";
-		String fontColor = "'blue'";
-		String bgColor = "'#FFFFFF'";
-		String msgTB_a = "";
-		String msgTB_b = "";
-		String msgTB_c = "";
+		String oldMsg = Constants.BLANK_STRING;
+		
+
 		int c = 0;
 		try {
 			while (true) {
@@ -161,31 +164,9 @@ public class HandleApplet extends JApplet implements Runnable {
 					mainContentArea.scrollRectToVisible(new Rectangle(0,
 							mainContentArea.getBounds(null).height, 1, 1));
 
-					if (StaticData.chatMessage.contains("|"
-							+ StaticData.teacher)) {
-						fontColor = "'red'";
-					} else {
-						fontColor = "'blue'";
-					}
-
-					if (row % 2 == 0)
-						bgColor = "#EFEFEF";
-					else
-						bgColor = "#FFFFFF";
-
-					msgTB_a = "<table width=\"100%\" bgcolor='"
-						+ bgColor
-						+ "' border ='0' cellpadding='4'><tr valign='top'><td width='90'>";
-					msgTB_b = "</td><td>";
-					msgTB_c = "</td></tr></table>";
-
-					appendText(mainContentArea, msgTB_a + getTime() + msgTB_b
-							+ "<font color=" + fontColor + ">"
-							+ StaticData.chatMessage.replaceAll("|", "")
-							+ "</font>" + msgTB_c);
+					appendText(mainContentArea, IRCIvelaClientStringUtils.singleton().setMessage(StaticData.chatMessage, row));
 					row++;
 
-					// jce = chatter.getJce();
 					mainContentArea.setFocusable(true);
 					mainContentArea.setVisible(true);
 					mainContentArea.setEnabled(true);
@@ -203,19 +184,23 @@ public class HandleApplet extends JApplet implements Runnable {
 					messageArea.setEditable(true);
 					sendMessageButton.setEnabled(true);
 					messageArea.setAutoscrolls(true);
-					//msg.setWrapStyleWord(true);
+					messageArea.setLineWrap(true);
+					messageArea.setWrapStyleWord(false);
 					setConnected(true);
-					messageArea.setText("");
+					messageArea.setText(Constants.BLANK_STRING);
 					
 				} else if(serverName.length() < 2) {
-					String connMessage = ".";
-					String m = "";
+					String connMessage = " .";
+					String m = Constants.BLANK_STRING;
 					int k = 0;
 					while(k < c){
 						m = m + connMessage;
 						k++;
 					}
 					messageArea.setText("Connecting "+m);
+				} else if(c > Constants.CONN_TIMEOUT && !isConnected()) {
+					messageArea.setText(messageArea.getText()+"[TIME OUT]");
+					t.interrupt();
 				}
 				
 				if(isConnected()) setConnectedUsers();
@@ -223,6 +208,7 @@ public class HandleApplet extends JApplet implements Runnable {
 				serverName = si.getServerName();
 				si = session.getServerInformation();
 				c++;
+				
 			}
 		} catch (InterruptedException e) {
 		}
@@ -248,17 +234,13 @@ public class HandleApplet extends JApplet implements Runnable {
 		return tA;
 	}
 
-	public static String getTime() {
-		Format formatter;
-		Date date = new Date();
-		formatter = new SimpleDateFormat("HH:mm:ss");
-		String stime = formatter.format(date);
-		return "<font color'#efefef'>[" + stime + "]&nbsp</font>";
-	}
+	
 
 	public static void sendMessage() {
-		StaticData.clientMessage = messageArea.getText().replaceAll("|", "");
-		// jce.getChannel().say(StaticMessages.clientMessage);
+		
+		String tempMsg = messageArea.getText().replaceAll("Constants.TEACHER_IDENTIFIER", Constants.BLANK_STRING);
+		tempMsg = messageArea.getText().replaceAll(Constants.LINE_BREAK, Constants.BLANK_STRING);
+		StaticData.clientMessage = tempMsg;
 		Channel channel = session.getChannel(StaticData.channel);
 		if(nicksComboBox.getSelectedItem().equals("All")){
 			session.sayChannel(StaticData.clientMessage, channel);
@@ -266,10 +248,16 @@ public class HandleApplet extends JApplet implements Runnable {
 			session.sayPrivate(nicksComboBox.getSelectedItem().toString(), StaticData.clientMessage);
 		}
 		
+		StaticData.chatMessage = IRCIvelaClientStringUtils.singleton().setMyMessage(StaticData.clientMessage);
+		messageArea.setText(Constants.BLANK_STRING);
+		messageArea.setFocusable(true);
+	}
+	
+	public static void sendSystemMessage(String sysMsg) {
+
+		Channel channel = session.getChannel(StaticData.channel);
+		session.sayChannel(StaticData.clientMessage, channel);
 		
-		StaticData.chatMessage = "<font color'#666666'>Me: "
-			+ StaticData.clientMessage + "</font>";
-		messageArea.setText("");
 	}
 
 	public static Action actionSend = new AbstractAction() {
