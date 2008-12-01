@@ -66,17 +66,20 @@ public class HandleApplet extends JApplet implements Runnable {
 		StaticData.channel = getParameter(Constants.PARAM_CHANNEL);
 		StaticData.nick = getParameter(Constants.PARAM_NICK);
 		setLayout(null);
+		
+		
+		String hexColor = getParameter(Constants.PARAM_BGCOLOR);
+		Color bColor = IRCIvelaClientStringUtils.singleton().getColorParameter(hexColor);
+		this.setBackground(bColor);
+		this.setSize(820,480);
+		
 		nicksComboBox.addItem(Constants.NICKSCOMBOBOX_FIRST_ELEMENT);
 		mainContentArea.setEditable(false);
 		mainContentArea.setContentType(Constants.MAINCONTENT_CONTENT_TYPE);
 		mainContentArea.setEditorKit(new HTMLEditorKit());
 		setVisible(true);
-		String hexColor = getParameter(Constants.PARAM_BGCOLOR);
-		String strColor = "FDF1D9";
-		int hexConverted = 0;
-		hexConverted = Integer.parseInt(strColor, 16);
-		Color bColor = Color.decode(String.valueOf(hexConverted));
-		this.setBackground(bColor);
+		
+		
 		mainContentArea.setBackground(Color.WHITE);
 		sendMessageButton.setText(Constants.SEND_BUTTON_NAME);
 		mainContentArea.setSize(800, 390);
