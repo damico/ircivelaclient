@@ -164,8 +164,7 @@ public class HandleApplet extends JApplet implements Runnable {
 				i++;
 				if (!oldMsg.equals(StaticData.chatMessage)) {
 
-					mainContentArea.scrollRectToVisible(new Rectangle(0,
-							mainContentArea.getBounds(null).height, 1, 1));
+					mainContentArea.scrollRectToVisible(new Rectangle(0,mainContentArea.getBounds(null).height, 1, 1));
 
 					appendText(mainContentArea, IRCIvelaClientStringUtils.singleton().setMessage(StaticData.chatMessage, row));
 					row++;
@@ -200,7 +199,7 @@ public class HandleApplet extends JApplet implements Runnable {
 						m = m + connMessage;
 						k++;
 					}
-					messageArea.setText("Connecting "+m);
+					messageArea.setText("Connecting "+m+"["+k+"]");
 				} else if(c > Constants.CONN_TIMEOUT && !isConnected()) {
 					messageArea.setText(messageArea.getText()+"[TIME OUT]");
 					t.interrupt();
@@ -219,6 +218,7 @@ public class HandleApplet extends JApplet implements Runnable {
 	}
 
 	public void paint(Graphics g) {
+		System.out.println("paint(Graphics g)");
 	}
 
 	private JEditorPane appendText(JEditorPane tA, String text) {
