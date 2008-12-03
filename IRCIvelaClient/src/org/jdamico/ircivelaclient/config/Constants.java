@@ -3,7 +3,7 @@ package org.jdamico.ircivelaclient.config;
 public class Constants {
 	
 	public static final String APPNAME = "IRCIvelaClient";
-	public static final String APPVERSION = "0.0.41a";
+	public static final String APPVERSION = "0.0.43a";
 	
 	public static final String PARAM_SERVER = "server";
 	public static final String PARAM_TEACHER = "teacher";
