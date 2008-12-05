@@ -2,15 +2,16 @@ package org.jdamico.ircivelaclient.view;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MediaTracker;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JApplet;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -27,12 +28,15 @@ import jerklib.Session;
 import jerklib.examples.ListenConversation;
 
 import org.jdamico.ircivelaclient.config.Constants;
+import org.jdamico.ircivelaclient.util.ChatPrinter;
 import org.jdamico.ircivelaclient.util.IRCIvelaClientStringUtils;
 
-public class HandleApplet extends JApplet implements Runnable {
+import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
+
+public class HandleApplet extends JApplet  {
 
 	/**
-	 * May the force be with you!
+	 * 
 	 */
 
 	private static int row = 0;
@@ -46,11 +50,19 @@ public class HandleApplet extends JApplet implements Runnable {
 	boolean threadSuspended;
 	private JScrollPane mainContentScrollPane = null;
 	private JEditorPane mainContentArea = new JEditorPane();
-	private JButton sendMessageButton = new JButton(actionSend);
+	private JButton sendMessageButton = new JButton();
 	private static JTextArea messageArea = new JTextArea();
 	private static JComboBox nicksComboBox = new JComboBox();
 	private Document doc = null;
 	private ListenConversation chatter = null;
+	
+	
+	private boolean loadingFlag = true;
+	private Image loadingGif ; 
+	private boolean showWaitMsg = true ; // will be set to false after image downloads
+	
+	private Hashtable userColorTable = new Hashtable();
+	String[] colors = {"red","black","green","orange","pink","gray"};
 	/**
 	 * http://forums.sun.com/thread.jspa?threadID=174214
 	 * 
@@ -59,11 +71,14 @@ public class HandleApplet extends JApplet implements Runnable {
 	// Executed when the applet is first created.
 	public void init() {
 
-		System.out.println("init(): begin");
+		//System.out.println("--"+getCodeBase());
+		
+		ChatPrinter.print("init(): begin");
 
 		StaticData.server = getParameter(Constants.PARAM_SERVER);
 		StaticData.teacher = getParameter(Constants.PARAM_TEACHER);
 		StaticData.channel = getParameter(Constants.PARAM_CHANNEL);
+		System.out.println(StaticData.channel);
 		StaticData.nick = getParameter(Constants.PARAM_NICK);
 		setLayout(null);
 		
@@ -101,9 +116,32 @@ public class HandleApplet extends JApplet implements Runnable {
 			}
 
 			private void msgKeyPressed(KeyEvent evt) {
-				if (evt.getKeyCode() == KeyEvent.VK_ENTER) sendMessage();
+				if (evt.getKeyCode() == KeyEvent.VK_ENTER){
+					
+					//update my MsgContentArea
+					String tempMsg = messageArea.getText().replaceAll("Constants.TEACHER_IDENTIFIER", Constants.BLANK_STRING);
+					tempMsg = messageArea.getText().replaceAll(Constants.LINE_BREAK, Constants.BLANK_STRING);
+					updateMainContentArea(tempMsg,"blue");
+					//send remote msg to IRC
+					sendMessage();
+				}
+					
 			}
 
+		});
+		
+		sendMessageButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				//update my MsgContentArea
+				String tempMsg = messageArea.getText().replaceAll("Constants.TEACHER_IDENTIFIER", Constants.BLANK_STRING);
+				tempMsg = messageArea.getText().replaceAll(Constants.LINE_BREAK, Constants.BLANK_STRING);
+				updateMainContentArea(tempMsg,"blue");
+				//send remote msg to IRC
+				sendMessage();
+				
+			}
 		});
 
 		add(mainContentScrollPane);
@@ -119,106 +157,65 @@ public class HandleApplet extends JApplet implements Runnable {
 
 		appendText(mainContentArea, IRCIvelaClientStringUtils.singleton().showVersion());
 
-		System.out.println("init(): end");
+		ChatPrinter.print("init(): end");
+		
+		 
 	}
 
 
 	public void destroy() {
-		System.out.println("destroy()");
+		ChatPrinter.print("destroy()");
 	}
 
 	public void start() {
 
-		chatter = new ListenConversation();
+		chatter = new ListenConversation(this);
 		Thread tC = new Thread(chatter);
 		tC.start();
-
-		if (t == null) {
-			System.out.println("start(): creating thread");
-			t = new Thread(this);
-			System.out.println("start(): starting thread");
-			threadSuspended = false;
-			t.start();
+		try {
+			tC.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
+		/*if (t == null) {
+			ChatPrinter.print("start(): creating thread");
+			t = new Thread(this);
+			ChatPrinter.print("start(): starting thread");
+			threadSuspended = false;
+			t.start();
+		}*/
+		 
 		session = chatter.getSession();
 		si = session.getServerInformation();
+		
 
 	}
 
 	public void stop() {
-		System.out.println("stop(): begin");
+		ChatPrinter.print("stop(): begin");
 		threadSuspended = true;
 	}
 
-	public void run() {
-
-		System.out.println("run(): begin");
-
-		String oldMsg = Constants.BLANK_STRING;
-		
-
-		int c = 0;
-		try {
-			while (true) {
-				i++;
-				if (!oldMsg.equals(StaticData.chatMessage)) {
-
-					mainContentArea.scrollRectToVisible(new Rectangle(0,mainContentArea.getBounds(null).height, 1, 1));
-
-					appendText(mainContentArea, IRCIvelaClientStringUtils.singleton().setMessage(StaticData.chatMessage, row));
-					row++;
-
-					mainContentArea.setFocusable(true);
-					mainContentArea.setVisible(true);
-					mainContentArea.setEnabled(true);
-
-				}
-
-				oldMsg = StaticData.chatMessage;
-				mainContentArea.setBackground(Color.WHITE);
-
-				t.sleep(2000); 
-				
-
-				if (serverName.length() > 2 && !isConnected()) {
-					messageArea.setEnabled(true);
-					messageArea.setEditable(true);
-					sendMessageButton.setEnabled(true);
-					messageArea.setAutoscrolls(true);
-					messageArea.setLineWrap(true);
-					messageArea.setWrapStyleWord(false);
-					setConnected(true);
-					messageArea.setText(Constants.BLANK_STRING);
-					
-				} else if(serverName.length() < 2) {
-					String connMessage = " .";
-					String m = Constants.BLANK_STRING;
-					int k = 0;
-					while(k < c){
-						m = m + connMessage;
-						k++;
-					}
-					messageArea.setText("Connecting "+m+"["+k+"]");
-				} else if(c > Constants.CONN_TIMEOUT && !isConnected()) {
-					messageArea.setText(messageArea.getText()+"[TIME OUT]");
-					t.interrupt();
-				}
-				
-				if(isConnected()) setConnectedUsers();
-
-				serverName = si.getServerName();
-				si = session.getServerInformation();
-				c++;
-				
-			}
-		} catch (InterruptedException e) {
-		}
-		System.out.println("run(): end");
-	}
+	 
 
 	public void paint(Graphics g) {
-		System.out.println("paint(Graphics g)");
+		super.paint(g);
+		//ChatPrinter.print("paint(Graphics g)");
+		if(loadingFlag){
+			 // test a boolean to if the "loading" message should be displayed
+	        if ( showWaitMsg )
+	        {
+	            g.drawString( "Please wait... loading..." , 20 , 20 );
+	            loadGraphics(); // call the method that actually loads the graphics
+	        } 
+	        else
+	        {
+	            g.drawImage( loadingGif , 240 , 25 , this );
+	            
+	        }
+		}
 	}
 
 	private JEditorPane appendText(JEditorPane tA, String text) {
@@ -243,12 +240,16 @@ public class HandleApplet extends JApplet implements Runnable {
 		
 		String tempMsg = messageArea.getText().replaceAll("Constants.TEACHER_IDENTIFIER", Constants.BLANK_STRING);
 		tempMsg = messageArea.getText().replaceAll(Constants.LINE_BREAK, Constants.BLANK_STRING);
+		
 		StaticData.clientMessage = tempMsg;
+		
 		Channel channel = session.getChannel(StaticData.channel);
 		if(nicksComboBox.getSelectedItem().equals("All")){
-			session.sayChannel(StaticData.clientMessage, channel);
+			//session.sayChannel(StaticData.clientMessage, channel);
+			channel.say(StaticData.clientMessage);
 		} else {
-			session.sayPrivate(nicksComboBox.getSelectedItem().toString(), StaticData.clientMessage);
+			//session.sayPrivate(nicksComboBox.getSelectedItem().toString(), StaticData.clientMessage);
+			channel.say(StaticData.clientMessage);
 		}
 		
 		StaticData.chatMessage = IRCIvelaClientStringUtils.singleton().setMyMessage(StaticData.clientMessage);
@@ -256,25 +257,15 @@ public class HandleApplet extends JApplet implements Runnable {
 		messageArea.setFocusable(true);
 	}
 	
+	 
+	
 	public static void sendSystemMessage(String sysMsg) {
 
 		Channel channel = session.getChannel(StaticData.channel);
-		session.sayChannel(StaticData.clientMessage, channel);
+		channel.say(StaticData.clientMessage);
 		
 	}
 
-	public static Action actionSend = new AbstractAction() {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public void actionPerformed(ActionEvent e) {
-			sendMessage();
-		}
-	};
-	
 	public boolean isConnected() {
 		return connected;
 	}
@@ -284,14 +275,118 @@ public class HandleApplet extends JApplet implements Runnable {
 	}
 	
 	public static void setConnectedUsers(){
+		
 		Channel currentChannel = session.getChannel(StaticData.channel);
+		System.out.println("1:" + currentChannel); 
 		List<String> connectedUsers = currentChannel.getNicks();
+		System.out.println("2:" + connectedUsers); 
 		List<String> activeUsers = new ArrayList<String>();
+		 
 		for(int j = 0; j < nicksComboBox.getItemCount(); j++){
 			activeUsers.add(nicksComboBox.getItemAt(j).toString());
 		}
+		
+		System.out.println("3:" + activeUsers); 
+		
 		for(int l = 0; l < connectedUsers.size(); l++){
 			if(!activeUsers.contains(connectedUsers.get(l))) nicksComboBox.addItem(connectedUsers.get(l));
 		}
 	}
+	
+	
+	public void populateConnectedUsers(Channel currentChannel){
+		 
+		 
+		List<String> connectedUsers = currentChannel.getNicks();
+		 
+		List<String> activeUsers = new ArrayList<String>();
+		 
+		for(int j = 0; j < nicksComboBox.getItemCount(); j++){
+			activeUsers.add(nicksComboBox.getItemAt(j).toString());
+		}
+	
+		for(int l = 0; l < connectedUsers.size(); l++){
+			
+			if(!activeUsers.contains(connectedUsers.get(l))) 
+				nicksComboBox.addItem(connectedUsers.get(l));
+			
+			int pos = IRCIvelaClientStringUtils.generateRandomNumber(colors.length-1);
+			userColorTable.put(connectedUsers.get(l).trim(), colors[pos]);
+		
+		}
+	}
+	
+	public void enableControls(){
+		
+		//enabling gui;
+		messageArea.setEnabled(true);
+		messageArea.setEditable(true);
+		sendMessageButton.setEnabled(true);
+		messageArea.setAutoscrolls(true);
+		messageArea.setLineWrap(true);
+		messageArea.setWrapStyleWord(false);
+		setConnected(true);
+		messageArea.setText(Constants.BLANK_STRING);
+		
+		//get conected users
+		//HandleApplet.setConnectedUsers();
+	}
+	
+	public void updateMainContentArea(String msg, String color){
+		mainContentArea.scrollRectToVisible(new Rectangle(0,mainContentArea.getBounds(null).height, 1, 1));
+		System.out.println("color: " +color);
+		appendText(mainContentArea, IRCIvelaClientStringUtils.singleton().setMessage(msg, row,color));
+		row++;
+
+		mainContentArea.setFocusable(true);
+		mainContentArea.setVisible(true);
+		mainContentArea.setEnabled(true);
+	}
+
+
+	public void setLoadingFlag(boolean loadingFlag) {
+		this.loadingFlag = loadingFlag;
+	}
+	
+	public void loadGraphics() 
+    {
+        // now load the graphics - this is like your "real" init
+        loadingGif = getImage( getCodeBase() , "loading.gif" );
+        
+        MediaTracker mt = new MediaTracker( this );
+        mt.addImage( loadingGif , 0 );
+    
+        try 
+        {
+            mt.waitForAll();  // block here until images are downloaded
+        }
+        catch ( InterruptedException e ) 
+        {
+        }
+    
+        showWaitMsg = false ; // it is safe for paint to draw the image now
+        repaint();
+    } // close loadGraphics 
+	
+	public String getColor(String nick){
+		return (String)this.userColorTable.get(nick);
+	}
+	
+	public void addUserTable(String nick){
+		
+		if(userColorTable.contains(nick.trim()))
+			return;
+		int pos = IRCIvelaClientStringUtils.generateRandomNumber(colors.length-1);
+		
+		userColorTable.put(nick.trim(), colors[pos]);
+		nicksComboBox.addItem(nick.trim());
+	}
+
+	public void removeUserTable(String nick){
+		userColorTable.remove(nick.trim());
+		nicksComboBox.removeItem(nick.trim());
+		nicksComboBox.repaint();
+	}
+	
+	
 }

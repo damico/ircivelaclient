@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 import org.jdamico.ircivelaclient.config.Constants;
 import org.jdamico.ircivelaclient.view.StaticData;
@@ -22,16 +23,14 @@ public class IRCIvelaClientStringUtils {
 		return formatedVersion;
 	}
 
-	public String setMessage(String unformatedMessage, int row) {
+	public String setMessage(String unformatedMessage, int row, String color) {
 		String formatedMessage = null;
-		String fontColor = "'blue'";
+		String fontColor = "'"+color+"'";
 		String bgColor = "'#FFFFFF'";
 
 		if (unformatedMessage.contains("|" + StaticData.teacher)) {
 			fontColor = "'red'";
-		} else {
-			fontColor = "'blue'";
-		}
+		} 
 
 		if (row % 2 == 0)
 			bgColor = "#EFEFEF";
@@ -50,30 +49,40 @@ public class IRCIvelaClientStringUtils {
 
 		return formatedMessage;
 	}
-	
-	public String setMyMessage(String unformatedMessage){
+
+	public String setMyMessage(String unformatedMessage) {
 		String formatedMessage = null;
-		formatedMessage = "<font color'#666666'>Me: "+ unformatedMessage+ "</font>";
-		return formatedMessage;		
+		formatedMessage = "<font color'#666666'>Me: " + unformatedMessage
+				+ "</font>";
+		return formatedMessage;
 	}
 
-	public  String getTime() {
+	public String getTime() {
 		Format formatter;
 		Date date = new Date();
 		formatter = new SimpleDateFormat("HH:mm:ss");
 		String stime = formatter.format(date);
 		return "<font color'#efefef'>[" + stime + "]&nbsp</font>";
 	}
-	
+
 	public Color getColorParameter(String strColor) {
 
+		int hexConverted = 0;
+		hexConverted = Integer.parseInt(strColor, 16);
+		Color returnColor = Color.decode(String.valueOf(hexConverted));
 
-	    	int hexConverted = 0;
-			hexConverted = Integer.parseInt(strColor, 16);
-			Color returnColor = Color.decode(String.valueOf(hexConverted));
-
-	    return returnColor;
+		return returnColor;
 	}
 
+    public static int generateRandomNumber(int maxSize){
+    	Random rand = new Random();
 
+    	int randnum = rand.nextInt();
+    	randnum = rand.nextInt(maxSize+1);
+    	return randnum;
+    }
+    
+    public static void main(String[] args) {
+		System.out.println(generateRandomNumber(5));
+	}
 }
