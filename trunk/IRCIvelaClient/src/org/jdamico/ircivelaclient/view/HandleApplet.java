@@ -32,7 +32,7 @@ import org.jdamico.ircivelaclient.util.IRCIvelaClientStringUtils;
 public class HandleApplet extends JApplet implements Runnable {
 
 	/**
-	 * 
+	 * May the force be with you!
 	 */
 
 	private static int row = 0;
