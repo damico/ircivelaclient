@@ -1,4 +1,4 @@
-package jerklib.examples;
+package org.jdamico.ircivelaclient.listener;
 
 import jerklib.Channel;
 import jerklib.ConnectionManager;
