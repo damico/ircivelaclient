@@ -23,11 +23,10 @@ import javax.swing.text.Document;
 import javax.swing.text.html.HTMLEditorKit;
 
 import jerklib.Channel;
-import jerklib.ServerInformation;
 import jerklib.Session;
-import jerklib.examples.ListenConversation;
 
 import org.jdamico.ircivelaclient.config.Constants;
+import org.jdamico.ircivelaclient.listener.ListenConversation;
 import org.jdamico.ircivelaclient.util.ChatPrinter;
 import org.jdamico.ircivelaclient.util.IRCIvelaClientStringUtils;
 
@@ -42,11 +41,10 @@ public class HandleApplet extends JApplet  {
 	private static int row = 0;
 	private boolean connected = false;
 	private static final long serialVersionUID = -97950894125721726L;
-	private int i = 0;
+
 	private static Session session;
-	private static ServerInformation si = null;
-	private static String serverName = "*";
-	private Thread t = null;
+
+
 	boolean threadSuspended;
 	private JScrollPane mainContentScrollPane = null;
 	private JEditorPane mainContentArea = new JEditorPane();
@@ -178,17 +176,9 @@ public class HandleApplet extends JApplet  {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		/*if (t == null) {
-			ChatPrinter.print("start(): creating thread");
-			t = new Thread(this);
-			ChatPrinter.print("start(): starting thread");
-			threadSuspended = false;
-			t.start();
-		}*/
 		 
 		session = chatter.getSession();
-		si = session.getServerInformation();
+
 		
 
 	}
