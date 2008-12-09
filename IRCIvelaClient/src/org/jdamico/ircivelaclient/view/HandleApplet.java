@@ -46,7 +46,6 @@ public class HandleApplet extends JApplet  {
 
 
 	boolean threadSuspended;
-	//well
 	private JScrollPane mainContentScrollPane = null;
 	private JEditorPane mainContentArea = new JEditorPane();
 	private JButton sendMessageButton = new JButton();
