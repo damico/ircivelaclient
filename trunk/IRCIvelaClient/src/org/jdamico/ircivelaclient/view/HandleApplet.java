@@ -2,6 +2,7 @@ package org.jdamico.ircivelaclient.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
@@ -22,14 +23,10 @@ public class HandleApplet extends JApplet  {
 
 	private JTabbedPane mainTabbedPane;
 	private ListenConversation chatter = null;
-	
-	
-	private boolean loadingFlag = true;
-	private Image loadingGif ; 
-	private boolean showWaitMsg = true ; // will be set to false after image downloads
-	
 	private ChatPanel chatPanel;
-	private DrawPanel drawPanel;
+	private FrDrw2FS drawPanel;
+	
+	
 	
 	//Executed when the applet is first created.
 	public void init() {
@@ -41,7 +38,7 @@ public class HandleApplet extends JApplet  {
 		StaticData.server = getParameter(Constants.PARAM_SERVER);
 		StaticData.teacher = getParameter(Constants.PARAM_TEACHER);
 		StaticData.channel = getParameter(Constants.PARAM_CHANNEL);
-		System.out.println(StaticData.channel);
+		//System.out.println(StaticData.channel);
 		StaticData.nick = getParameter(Constants.PARAM_NICK);
 		setLayout(new BorderLayout());
 		
@@ -69,7 +66,7 @@ public class HandleApplet extends JApplet  {
 		//creating panels
 		this.mainTabbedPane = new JTabbedPane();
 		this.chatPanel = new ChatPanel();
-		this.drawPanel = new DrawPanel();
+		this.drawPanel = new FrDrw2FS();
 		
 		//adding to tab
 		this.mainTabbedPane.addTab("Chat", this.chatPanel);
@@ -83,6 +80,7 @@ public class HandleApplet extends JApplet  {
 		irResponseHandler.setChatPanel(chatPanel);
 		irResponseHandler.setHandleApplet(this);
 		chatter.addObserver(irResponseHandler);
+		
 		
 		//end
 		ChatPrinter.print("init(): end");
@@ -100,46 +98,7 @@ public class HandleApplet extends JApplet  {
 		
 	}
 
-	 
-
-	public void paint(Graphics g) {
-		super.paint(g);
-		//ChatPrinter.print("paint(Graphics g)");
-		if(loadingFlag){
-			 // test a boolean to if the "loading" message should be displayed
-	        if ( showWaitMsg )
-	        {
-	            g.drawString( "Please wait... loading..." , 20 , 20 );
-	            loadGraphics(); // call the method that actually loads the graphics
-	        } 
-	        else
-	        {
-	            g.drawImage( loadingGif , 240 , 25 , this );
-	            
-	        }
-		}
-	}
-
-	public void loadGraphics() 
-    {
-        // now load the graphics - this is like your "real" init
-        loadingGif = getImage( getCodeBase() , "loading.gif" );
-        
-        MediaTracker mt = new MediaTracker( this );
-        mt.addImage( loadingGif , 0 );
-    
-        try 
-        {
-            mt.waitForAll();  // block here until images are downloaded
-        }
-        catch ( InterruptedException e ) 
-        {
-        }
-    
-        showWaitMsg = false ; // it is safe for paint to draw the image now
-        repaint();
-    } // close loadGraphics 
-
+	
 
 	public ChatPanel getChatPanel() {
 		return chatPanel;
@@ -152,9 +111,10 @@ public class HandleApplet extends JApplet  {
 
 
 	public void setLoadingFlag(boolean loadingFlag) {
-		this.loadingFlag = loadingFlag;
+		if(!loadingFlag){
+			this.chatPanel.stopLoadingPanel();
+			this.repaint();
+		}
 	}
-	
-	
-	
+		
 }
