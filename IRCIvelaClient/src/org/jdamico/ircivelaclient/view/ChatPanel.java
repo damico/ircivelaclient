@@ -42,6 +42,7 @@ public class ChatPanel extends JPanel{
 	private JButton sendMessageButton = new JButton();
 	private static JTextArea messageArea = new JTextArea();
 	private static JComboBox nicksComboBox = new JComboBox();
+	private LoadingPanel loadingPanel;
 	private Document doc = null;
 	
 	private Hashtable userColorTable = new Hashtable();
@@ -51,6 +52,10 @@ public class ChatPanel extends JPanel{
 		
 		this.setLayout(null);
 		this.setSize(new Dimension(820,480));
+		
+		this.loadingPanel = new LoadingPanel();
+		this.loadingPanel.setSize(300,300);
+		this.loadingPanel.setLocation(250, 50);
 		
 		nicksComboBox.addItem(Constants.NICKSCOMBOBOX_FIRST_ELEMENT);
 		mainContentArea.setEditable(false);
@@ -111,6 +116,7 @@ public class ChatPanel extends JPanel{
 		add(messageArea);
 		add(sendMessageButton);
 		add(nicksComboBox);
+		add(loadingPanel);
 
 		mainContentScrollPane.setBounds(5, 5, 800, 390);
 		mainContentArea.setBackground(Color.WHITE);
@@ -172,16 +178,16 @@ public class ChatPanel extends JPanel{
 	public void setConnectedUsers(){
 		
 		Channel currentChannel = session.getChannel(StaticData.channel);
-		System.out.println("1:" + currentChannel); 
+		//System.out.println("1:" + currentChannel); 
 		List<String> connectedUsers = currentChannel.getNicks();
-		System.out.println("2:" + connectedUsers); 
+		//System.out.println("2:" + connectedUsers); 
 		List<String> activeUsers = new ArrayList<String>();
 		 
 		for(int j = 0; j < nicksComboBox.getItemCount(); j++){
 			activeUsers.add(nicksComboBox.getItemAt(j).toString());
 		}
 		
-		System.out.println("3:" + activeUsers); 
+		//System.out.println("3:" + activeUsers); 
 		
 		for(int l = 0; l < connectedUsers.size(); l++){
 			if(!activeUsers.contains(connectedUsers.get(l))) nicksComboBox.addItem(connectedUsers.get(l));
@@ -224,7 +230,7 @@ public class ChatPanel extends JPanel{
 	
 	public void updateMainContentArea(String msg, String color){
 		mainContentArea.scrollRectToVisible(new Rectangle(0,mainContentArea.getBounds(null).height, 1, 1));
-		System.out.println("color: " +color);
+		//System.out.println("color: " +color);
 		appendText(mainContentArea, IRCIvelaClientStringUtils.singleton().setMessage(msg, row,color));
 		row++;
 
@@ -269,5 +275,8 @@ public class ChatPanel extends JPanel{
 		this.session = session;
 	}
 
-	
+	public void stopLoadingPanel(){
+		this.loadingPanel.setLoadingFlag(false);
+		this.remove(this.loadingPanel);
+	}
 }

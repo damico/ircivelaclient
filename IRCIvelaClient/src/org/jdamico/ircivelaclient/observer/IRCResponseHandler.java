@@ -69,6 +69,12 @@ public class IRCResponseHandler implements Observer {
 				System.out.println("QUIT");
 				QuitEvent quitEvent = (QuitEvent)event;
 				chatPanel.removeUserTable(quitEvent.getNick());
+				
+				String tempStr = quitEvent.getNick() + " has left (" + quitEvent.getQuitMessage()+")";
+		        StaticData.chatMessage = tempStr;
+		        //System.out.println("teste--->"+event.getMessage());
+		        String color = chatPanel.getColor(quitEvent.getNick().trim());
+		        chatPanel.updateMainContentArea(tempStr,color);
 			}
 				
 		}
