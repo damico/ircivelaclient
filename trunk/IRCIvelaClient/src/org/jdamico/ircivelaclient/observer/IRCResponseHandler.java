@@ -64,12 +64,14 @@ public class IRCResponseHandler implements Observer {
 				System.out.println("JOIN");
 				JoinEvent joinEvent = (JoinEvent)event;
 				chatPanel.addUserTable(joinEvent.getNick());
+				chatPanel.addUserHost(joinEvent.getHostName());
+				System.out.println("host: "+joinEvent.getHostName());
 				
 			}else if (event.getType() == Type.QUIT){
 				System.out.println("QUIT");
 				QuitEvent quitEvent = (QuitEvent)event;
 				chatPanel.removeUserTable(quitEvent.getNick());
-				
+				chatPanel.removeUserHost(quitEvent.getHostName());
 				String tempStr = quitEvent.getNick() + " has left (" + quitEvent.getQuitMessage()+")";
 		        StaticData.chatMessage = tempStr;
 		        //System.out.println("teste--->"+event.getMessage());

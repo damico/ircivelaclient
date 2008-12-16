@@ -3,7 +3,7 @@ package org.jdamico.ircivelaclient.config;
 public class Constants {
 	
 	public static final String APPNAME = "IRCIvelaClient";
-	public static final String APPVERSION = "0.1.1-Darth Sidious";
+	public static final String APPVERSION = "0.1.2-Han Solo";
 	
 	public static final String PARAM_SERVER = "server";
 	public static final String PARAM_TEACHER = "teacher";
@@ -17,4 +17,5 @@ public class Constants {
 	public static final String TEACHER_IDENTIFIER = "|";	
 	public static final String LINE_BREAK = "\n";
 	public static final int CONN_TIMEOUT = 30; /* 30 = 60 seconds*/
+	public static final int UDP_PORT = 6668; 
 }

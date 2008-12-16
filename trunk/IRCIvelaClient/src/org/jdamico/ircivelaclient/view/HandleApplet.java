@@ -2,13 +2,11 @@ package org.jdamico.ircivelaclient.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.MediaTracker;
 
 import javax.swing.JApplet;
 import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.jdamico.ircivelaclient.config.Constants;
 import org.jdamico.ircivelaclient.listener.ListenConversation;
@@ -49,24 +47,15 @@ public class HandleApplet extends JApplet  {
 		this.setSize(820,500);
 		
 		//starting IRC facade
-		chatter = new ListenConversation(this);
+		this.chatter = new ListenConversation(this);
 		Thread tC = new Thread(chatter);
 		
 		tC.start();
-		
-		
-		/*try {
-			tC.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
-		
-		
+		 
 		//creating panels
 		this.mainTabbedPane = new JTabbedPane();
 		this.chatPanel = new ChatPanel();
-		this.drawPanel = new FrDrw2FS();
+		this.drawPanel = new FrDrw2FS(this.chatPanel);
 		
 		//adding to tab
 		this.mainTabbedPane.addTab("Chat", this.chatPanel);
@@ -79,8 +68,24 @@ public class HandleApplet extends JApplet  {
 		IRCResponseHandler irResponseHandler = new IRCResponseHandler();
 		irResponseHandler.setChatPanel(chatPanel);
 		irResponseHandler.setHandleApplet(this);
-		chatter.addObserver(irResponseHandler);
+		this.chatter.addObserver(irResponseHandler);
 		
+		//add tab listener
+		/*mainTabbedPane.addChangeListener(new ChangeListener(){
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				int index = ((JTabbedPane)e.getSource()).getSelectedIndex();
+				
+				if(index==1){
+					
+					drawPanel.transfer();
+				}
+				
+				
+			}
+			
+		});*/
 		
 		//end
 		ChatPrinter.print("init(): end");
