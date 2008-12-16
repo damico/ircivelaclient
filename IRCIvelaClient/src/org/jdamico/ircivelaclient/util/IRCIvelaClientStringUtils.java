@@ -1,10 +1,14 @@
 package org.jdamico.ircivelaclient.util;
 
 import java.awt.Color;
+import java.awt.Point;
 import java.text.Format;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
+import java.util.StringTokenizer;
 
 import org.jdamico.ircivelaclient.config.Constants;
 import org.jdamico.ircivelaclient.view.StaticData;
@@ -80,6 +84,36 @@ public class IRCIvelaClientStringUtils {
     	int randnum = rand.nextInt();
     	randnum = rand.nextInt(maxSize+1);
     	return randnum;
+    }
+    
+    public static String generateInfoString(List<P2P> list){
+    	String s = "";
+    	for(P2P p2p : list){
+    		s+=p2p.p1.x+"-";
+    		s+=p2p.p1.y+"-";
+    		s+=p2p.p2.x+"-";
+    		s+=p2p.p2.y+"-";
+    		s+="#";
+    	}
+    	return s;
+    }
+    
+    public static List<P2P> degenerateInfoString(String msg){
+    	ArrayList<P2P> list = new ArrayList<P2P>();
+    	
+    	StringTokenizer tokens = new StringTokenizer(msg,"#");
+    	while(tokens.hasMoreTokens()){
+    		String token = tokens.nextToken();
+    		String numbers[] = token.split("-");
+    		P2P p2p = new P2P();
+    		Point p1 = new Point(Integer.parseInt(numbers[0]), Integer.parseInt(numbers[1]));
+    		Point p2 = new Point(Integer.parseInt(numbers[2]), Integer.parseInt(numbers[3]));
+    		p2p.p1 = p1;
+    		p2p.p2 = p2;
+    		list.add(p2p);
+    	}
+    	
+    	return list;
     }
     
     public static void main(String[] args) {

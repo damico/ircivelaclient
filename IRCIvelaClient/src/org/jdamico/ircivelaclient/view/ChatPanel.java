@@ -46,6 +46,7 @@ public class ChatPanel extends JPanel{
 	private Document doc = null;
 	
 	private Hashtable userColorTable = new Hashtable();
+	private ArrayList<String> usersHost = new ArrayList<String>();
 	String[] colors = {"purple","black","green","yellow","pink","gray"};
 	
 	public ChatPanel() {
@@ -157,8 +158,8 @@ public class ChatPanel extends JPanel{
 			//session.sayChannel(StaticData.clientMessage, channel);
 			channel.say(StaticData.clientMessage);
 		} else {
-			//session.sayPrivate(nicksComboBox.getSelectedItem().toString(), StaticData.clientMessage);
-			channel.say(StaticData.clientMessage);
+			session.sayPrivate(nicksComboBox.getSelectedItem().toString(), StaticData.clientMessage);
+			
 		}
 		
 		StaticData.chatMessage = IRCIvelaClientStringUtils.singleton().setMyMessage(StaticData.clientMessage);
@@ -278,5 +279,17 @@ public class ChatPanel extends JPanel{
 	public void stopLoadingPanel(){
 		this.loadingPanel.setLoadingFlag(false);
 		this.remove(this.loadingPanel);
+	}
+	
+	public void addUserHost(String ip){
+		this.usersHost.add(ip.trim());
+	}
+	
+	public void removeUserHost(String ip){
+		this.usersHost.remove(ip.trim());
+	}
+	
+	public ArrayList<String> getUserHost(){
+		return this.usersHost;
 	}
 }

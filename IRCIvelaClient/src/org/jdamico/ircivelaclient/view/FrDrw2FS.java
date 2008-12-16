@@ -16,12 +16,17 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+
+import org.jdamico.ircivelaclient.comm.UDPConnection;
+import org.jdamico.ircivelaclient.config.Constants;
+import org.jdamico.ircivelaclient.util.IRCIvelaClientStringUtils;
+import org.jdamico.ircivelaclient.util.P2P;
 
 public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListener {
 	
@@ -31,21 +36,39 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
 	private int height = 473;
 	private BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
     private Point start, end;
-    private Graphics2D g2d, g2dFS, g = null;
+    private Graphics2D g2d, g2dFS;
     private JButton saveImg = new JButton();
     private JButton eraseImg = new JButton(); 
     private JButton rubberImg = new JButton();
+    private JButton sendAllImg = new JButton();
     
     private boolean rubberToggle = false;
+    private ArrayList<P2P> drawn = new ArrayList<P2P>();
+    private ArrayList<Point> erased = new ArrayList<Point>();
     
+    private UDPConnection udpConnection;
+    private ChatPanel chatPanel;
     
-    private int movedY, movedX;
-    
-    public FrDrw2FS() {
+    public FrDrw2FS(ChatPanel chatPanel) {
         this.setBackground(Color.BLACK);
         this.setForeground(Color.WHITE);
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
+        this.udpConnection = new UDPConnection(Constants.UDP_PORT);
+        this.chatPanel = chatPanel;
+        //listening
+        Thread t = new Thread(){
+        	@Override
+        	public void run() {
+        		while(true){
+        			String rcv = udpConnection.receive();
+            		process(rcv);
+        		}
+        		
+        	}
+        };
+        t.start();
+        
         this.init();
     }
     
@@ -67,7 +90,10 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     				g2dFS.setBackground(Color.black);
         			g2d.setBackground(Color.black);
         			g2dFS.clearRect(0, 0, width, height);
-        			g2d.clearRect(0, 0, width, height);	
+        			g2d.clearRect(0, 0, width, height);
+        			
+        			drawn.clear();
+        			erased.clear();
         			repaint();
     			}
     			
@@ -92,26 +118,54 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     		}
     	});
     	
+    	sendAllImg.setText("Send");
+    	sendAllImg.addActionListener(new ActionListener(){
+    		@Override
+    		public void actionPerformed(ActionEvent e) {
+    			String snd = IRCIvelaClientStringUtils.generateInfoString(drawn);
+    			
+    			ArrayList<String> users = chatPanel.getUserHost();
+
+    			for(String user:users){
+    				System.out.println(user);
+    				InetAddress address = udpConnection.connect(user);
+        			udpConnection.send(snd, address,Constants.UDP_PORT);
+    			}
+    			
+    			
+    		}
+    	});
+    	
+    	add(sendAllImg);
     	add(rubberImg);
     	add(saveImg);
     	add(eraseImg);
     	g2dFS = bufferedImage.createGraphics();
+    	 
     }
     
      
     
     public void mousePressed(MouseEvent e) {
+    	
         start = new Point(e.getX(), e.getY());
     }
 
     public void mouseDragged(MouseEvent e) {
         g2d = (Graphics2D) this.getGraphics();
         if(!rubberToggle){
+        	
         	end = new Point(e.getX(), e.getY());
             g2d.setColor(Color.white);
             g2dFS.setColor(Color.white);
+            
             g2d.drawLine(start.x, start.y, end.x, end.y);
             g2dFS.drawLine(start.x, start.y, end.x, end.y); /* Olha a gambi aqui! */
+            
+            P2P p2p = new P2P();
+            p2p.p1 = start;
+            p2p.p2 = end;
+            this.drawn.add(p2p);
             start = end;
         }else{
         	
@@ -119,11 +173,19 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
 			g2d.setBackground(Color.black);
 			g2dFS.clearRect(e.getX(), e.getY(), 20, 20);
 			g2d.clearRect(e.getX(), e.getY(), 20, 20);
+			Point p = new Point(e.getX(), e.getY());
 			
+			erased.add(p);
         }
         
+    }    
+    
+    public void process(String rcv){
+    	//System.out.println("-->"+rcv);
+    	this.drawn = (ArrayList<P2P>)IRCIvelaClientStringUtils.degenerateInfoString(rcv);
+    	repaint();
     }
-
+    
     public RenderedImage getImage() {
         g2dFS.dispose();   
         return bufferedImage;
@@ -138,11 +200,28 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
         }
     }
     
-    public void mouseMoved(MouseEvent e){
-    	
-    }
+    public void mouseMoved(MouseEvent e) {}
     public void mouseClicked(MouseEvent e) 	{}
     public void mouseEntered(MouseEvent e) 	{}
     public void mouseExited(MouseEvent e)	{}
     public void mouseReleased(MouseEvent e) {}
+    
+    @Override
+    public void paint(Graphics g) {
+    
+    	super.paint(g);
+    	
+    	Graphics2D g2dTemp = (Graphics2D)g;
+    	for(P2P p2p : drawn){
+    		
+    		g2dTemp.drawLine(p2p.p1.x, p2p.p1.y, p2p.p2.x, p2p.p2.y);
+    		
+    	}
+    	
+    	for(Point p : erased){
+    		g2dTemp.setBackground(Color.black);
+    		g2dTemp.clearRect(p.x, p.y, 20, 20);
+    	}
+    }
 }
+
