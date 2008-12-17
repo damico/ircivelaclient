@@ -124,10 +124,11 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     		public void actionPerformed(ActionEvent e) {
     			String snd = IRCIvelaClientStringUtils.generateInfoString(drawn);
     			
+    			System.out.println("SEND");
     			ArrayList<String> users = chatPanel.getUserHost();
 
     			for(String user:users){
-    				System.out.println(user);
+    				System.out.println("-->"+user);
     				InetAddress address = udpConnection.connect(user);
         			udpConnection.send(snd, address,Constants.UDP_PORT);
     			}
