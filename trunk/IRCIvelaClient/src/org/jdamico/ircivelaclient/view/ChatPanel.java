@@ -202,6 +202,7 @@ public class ChatPanel extends JPanel{
 		List<String> connectedUsers = currentChannel.getNicks();
 		 
 		List<String> activeUsers = new ArrayList<String>();
+		
 		 
 		for(int j = 0; j < nicksComboBox.getItemCount(); j++){
 			activeUsers.add(nicksComboBox.getItemAt(j).toString());

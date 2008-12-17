@@ -45,6 +45,7 @@ public class IRCResponseHandler implements Observer {
 				JoinCompleteEvent joinCompleteEvent = (JoinCompleteEvent)event;
 				Channel currentChannel = joinCompleteEvent.getChannel();
 				chatPanel.populateConnectedUsers(currentChannel);
+				
 			
 			}else if (event.getType() == Type.CHANNEL_MESSAGE){
 				System.out.println("CHANNEL_MESSAGE");
@@ -77,6 +78,8 @@ public class IRCResponseHandler implements Observer {
 		        //System.out.println("teste--->"+event.getMessage());
 		        String color = chatPanel.getColor(quitEvent.getNick().trim());
 		        chatPanel.updateMainContentArea(tempStr,color);
+			}else if(event.getType() == Type.WHOIS_EVENT){
+				
 			}
 				
 		}
