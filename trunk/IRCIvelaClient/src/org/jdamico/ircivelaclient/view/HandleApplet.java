@@ -67,6 +67,7 @@ public class HandleApplet extends JApplet  {
 		//adding observers
 		IRCResponseHandler irResponseHandler = new IRCResponseHandler();
 		irResponseHandler.setChatPanel(chatPanel);
+		irResponseHandler.setDrawPanel(drawPanel);
 		irResponseHandler.setHandleApplet(this);
 		this.chatter.addObserver(irResponseHandler);
 		

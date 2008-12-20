@@ -4,6 +4,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.jdamico.ircivelaclient.view.ChatPanel;
+import org.jdamico.ircivelaclient.view.FrDrw2FS;
 import org.jdamico.ircivelaclient.view.HandleApplet;
 import org.jdamico.ircivelaclient.view.StaticData;
 
@@ -18,6 +19,7 @@ import jerklib.events.IRCEvent.Type;
 public class IRCResponseHandler implements Observer {
 
 	private ChatPanel chatPanel;
+	private FrDrw2FS drawPanel;
 	private HandleApplet handleApplet;
 	
 	public IRCResponseHandler(){
@@ -60,7 +62,11 @@ public class IRCResponseHandler implements Observer {
 				System.out.println("PRIVATE_MESSAGE");
 				MessageEvent messageEvent = (MessageEvent)event;
 				StaticData.chatMessage = messageEvent.getNick() + ": [private] " + messageEvent.getMessage();
-				
+				String msg = messageEvent.getMessage();
+				if(msg.startsWith("DRAW_IV")){
+					msg = msg.replaceAll("DRAW_IV", "");
+					this.drawPanel.process(msg);
+				}
 			}else if (event.getType() == Type.JOIN){
 				System.out.println("JOIN");
 				JoinEvent joinEvent = (JoinEvent)event;
@@ -99,6 +105,14 @@ public class IRCResponseHandler implements Observer {
 
 	public void setHandleApplet(HandleApplet handleApplet) {
 		this.handleApplet = handleApplet;
+	}
+
+	public FrDrw2FS getDrawPanel() {
+		return drawPanel;
+	}
+
+	public void setDrawPanel(FrDrw2FS drawPanel) {
+		this.drawPanel = drawPanel;
 	}
 
 	

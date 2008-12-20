@@ -54,10 +54,10 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
         this.setForeground(Color.WHITE);
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
-        this.udpConnection = new UDPConnection(Constants.UDP_PORT);
+        //this.udpConnection = new UDPConnection(Constants.UDP_PORT+1);
         this.chatPanel = chatPanel;
         //listening
-        Thread t = new Thread(){
+        /*Thread t = new Thread(){
         	@Override
         	public void run() {
         		while(true){
@@ -66,8 +66,8 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
         		}
         		
         	}
-        };
-        t.start();
+        };*/
+        //t.start();
         
         this.init();
     }
@@ -125,14 +125,16 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     			String snd = IRCIvelaClientStringUtils.generateInfoString(drawn);
     			
     			System.out.println("SEND");
-    			ArrayList<String> users = chatPanel.getUserHost();
+    			System.out.println(snd);
+    			chatPanel.sendBroadcastPrivateMessage("DRAW_IV " +snd);
+    			/*ArrayList<String> users = chatPanel.getUserHost();
 
     			for(String user:users){
     				System.out.println("-->"+user);
     				InetAddress address = udpConnection.connect(user);
         			udpConnection.send(snd, address,Constants.UDP_PORT);
     			}
-    			
+    			*/
     			
     		}
     	});
