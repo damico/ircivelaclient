@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -167,6 +168,13 @@ public class ChatPanel extends JPanel{
 		messageArea.setFocusable(true);
 	}
 	
+	public void sendBroadcastPrivateMessage(String msg){
+		Enumeration<String> nicks = this.userColorTable.keys();
+		while(nicks.hasMoreElements()){
+			String nickTemp = nicks.nextElement();
+			session.sayPrivate(nickTemp, msg);
+		}
+	}
 	 
 	
 	public void sendSystemMessage(String sysMsg) {

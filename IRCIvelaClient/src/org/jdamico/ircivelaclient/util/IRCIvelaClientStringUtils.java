@@ -99,6 +99,7 @@ public class IRCIvelaClientStringUtils {
     }
     
     public static List<P2P> degenerateInfoString(String msg){
+    	msg = msg.trim();
     	ArrayList<P2P> list = new ArrayList<P2P>();
     	
     	StringTokenizer tokens = new StringTokenizer(msg,"#");
