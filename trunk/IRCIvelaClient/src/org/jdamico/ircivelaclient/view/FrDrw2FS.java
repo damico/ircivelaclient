@@ -23,6 +23,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import org.jdamico.ircivelaclient.comm.ServletConnection;
 import org.jdamico.ircivelaclient.comm.UDPConnection;
 import org.jdamico.ircivelaclient.config.Constants;
 import org.jdamico.ircivelaclient.util.IRCIvelaClientStringUtils;
@@ -41,12 +42,13 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     private JButton eraseImg = new JButton(); 
     private JButton rubberImg = new JButton();
     private JButton sendAllImg = new JButton();
+    private JButton updateImg = new JButton();
     
     private boolean rubberToggle = false;
     private ArrayList<P2P> drawn = new ArrayList<P2P>();
     private ArrayList<Point> erased = new ArrayList<Point>();
     
-    private UDPConnection udpConnection;
+    private ServletConnection servletConnection;
     private ChatPanel chatPanel;
     
     public FrDrw2FS(ChatPanel chatPanel) {
@@ -55,6 +57,7 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         //this.udpConnection = new UDPConnection(Constants.UDP_PORT+1);
+        this.servletConnection = new ServletConnection(Constants.SERVLET_PATH);
         this.chatPanel = chatPanel;
         //listening
         /*Thread t = new Thread(){
@@ -126,7 +129,16 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     			
     			System.out.println("SEND");
     			System.out.println(snd);
-    			chatPanel.sendBroadcastPrivateMessage("DRAW_IV " +snd);
+    			try {
+					servletConnection.send(snd);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (ClassNotFoundException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+    			//chatPanel.sendBroadcastPrivateMessage("DRAW_IV " +snd);
     			/*ArrayList<String> users = chatPanel.getUserHost();
 
     			for(String user:users){
@@ -139,10 +151,29 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     		}
     	});
     	
+    	updateImg.setText("Update");
+    	updateImg.addActionListener(new ActionListener(){
+    		@Override
+    		public void actionPerformed(ActionEvent e) {
+    			
+    			try {
+					String s = servletConnection.readRemoteFile();
+					if(s!=null){
+						process(s);
+					}
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+    			
+    		}
+    	});
+    	
     	add(sendAllImg);
     	add(rubberImg);
     	add(saveImg);
     	add(eraseImg);
+    	add(updateImg);
     	g2dFS = bufferedImage.createGraphics();
     	 
     }
@@ -184,7 +215,7 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     }    
     
     public void process(String rcv){
-    	//System.out.println("-->"+rcv);
+    	System.out.println("RCCV-->"+rcv);
     	this.drawn = (ArrayList<P2P>)IRCIvelaClientStringUtils.degenerateInfoString(rcv);
     	repaint();
     }
