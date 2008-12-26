@@ -3,7 +3,7 @@ package org.jdamico.ircivelaclient.config;
 public class Constants {
 	
 	public static final String APPNAME = "IRCIvelaClient";
-	public static final String APPVERSION = "0.1.3-Leia Organa";
+	public static final String APPVERSION = "0.2.0-Jabba the Hut";
 	
 	public static final String PARAM_SERVER = "server";
 	public static final String PARAM_TEACHER = "teacher";
@@ -16,6 +16,10 @@ public class Constants {
 	public static final String BLANK_STRING = "";
 	public static final String TEACHER_IDENTIFIER = "|";	
 	public static final String LINE_BREAK = "\n";
+	public static final String SERVLET_PATH = "http://200.17.41.212:8080/ivela-web/SaveObjectServlet";
+	public static final String REMOTE_FILE_PATH= "http://200.17.41.212/public_content/chat.txt";
+	
 	public static final int CONN_TIMEOUT = 30; /* 30 = 60 seconds*/
 	public static final int UDP_PORT = 6668; 
+	
 }
