@@ -61,12 +61,10 @@ public class IRCResponseHandler implements Observer {
 			}else if (event.getType() == Type.PRIVATE_MESSAGE){
 				System.out.println("PRIVATE_MESSAGE");
 				MessageEvent messageEvent = (MessageEvent)event;
-				StaticData.chatMessage = messageEvent.getNick() + ": [private] " + messageEvent.getMessage();
-				String msg = messageEvent.getMessage();
-				if(msg.startsWith("DRAW_IV")){
-					msg = msg.replaceAll("DRAW_IV", "");
-					this.drawPanel.process(msg);
-				}
+				String what = messageEvent.getMessage();
+				String whom = messageEvent.getNick().trim();
+				handleApplet.updatePvt(whom,whom+": "+ what);
+				
 			}else if (event.getType() == Type.JOIN){
 				System.out.println("JOIN");
 				JoinEvent joinEvent = (JoinEvent)event;

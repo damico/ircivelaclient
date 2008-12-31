@@ -2,11 +2,12 @@ package org.jdamico.ircivelaclient.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.util.HashMap;
 
 import javax.swing.JApplet;
 import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.jdamico.ircivelaclient.config.Constants;
 import org.jdamico.ircivelaclient.listener.ListenConversation;
@@ -23,6 +24,7 @@ public class HandleApplet extends JApplet  {
 	private ListenConversation chatter = null;
 	private ChatPanel chatPanel;
 	private FrDrw2FS drawPanel;
+	private HashMap<String, PvtChatPanel> pvtTabs;
 	
 	
 	
@@ -44,7 +46,7 @@ public class HandleApplet extends JApplet  {
 		String hexColor = getParameter(Constants.PARAM_BGCOLOR);
 		Color bColor = IRCIvelaClientStringUtils.singleton().getColorParameter(hexColor);
 		this.setBackground(bColor);
-		this.setSize(820,500);
+		this.setSize(920,500);
 		
 		//starting IRC facade
 		this.chatter = new ListenConversation(this);
@@ -54,8 +56,9 @@ public class HandleApplet extends JApplet  {
 		 
 		//creating panels
 		this.mainTabbedPane = new JTabbedPane();
-		this.chatPanel = new ChatPanel();
+		this.chatPanel = new ChatPanel(this);
 		this.drawPanel = new FrDrw2FS(this.chatPanel);
+		
 		
 		//adding to tab
 		this.mainTabbedPane.addTab("Chat", this.chatPanel);
@@ -63,6 +66,7 @@ public class HandleApplet extends JApplet  {
 		
 		//adding panels
 		this.add(this.mainTabbedPane,BorderLayout.CENTER);
+		
 		
 		//adding observers
 		IRCResponseHandler irResponseHandler = new IRCResponseHandler();
@@ -88,6 +92,7 @@ public class HandleApplet extends JApplet  {
 			
 		});*/
 		
+		this.pvtTabs = new HashMap<String, PvtChatPanel>();
 		//end
 		ChatPrinter.print("init(): end");
 		
@@ -121,6 +126,30 @@ public class HandleApplet extends JApplet  {
 			this.chatPanel.stopLoadingPanel();
 			this.repaint();
 		}
+	}
+	
+	public PvtChatPanel addTab(String title){
+		if(this.pvtTabs.containsKey(title))
+			return this.pvtTabs.get(title);
+		PvtChatPanel pvtChatPanel = new PvtChatPanel(this,title,this.chatPanel.getSession());
+		this.mainTabbedPane.add(pvtChatPanel,title);
+		this.pvtTabs.put(title, pvtChatPanel);
+		return pvtChatPanel;
+	}
+	
+	public void removeTab(String title){
+		PvtChatPanel pvtTemp = this.pvtTabs.get(title);
+		this.pvtTabs.remove(title);
+		this.mainTabbedPane.remove(pvtTemp);
+		this.mainTabbedPane.updateUI();
+	}
+	
+	public void updatePvt(String whom, String what){
+		PvtChatPanel pvtChatPanel = this.pvtTabs.get(whom);
+		if(pvtChatPanel==null){
+			pvtChatPanel = this.addTab(whom);
+		}
+		pvtChatPanel.updateMainContentArea(what, "red");
 	}
 		
 }
