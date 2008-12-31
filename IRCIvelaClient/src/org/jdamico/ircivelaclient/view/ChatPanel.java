@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
@@ -40,34 +41,39 @@ public class ChatPanel extends JPanel{
 	boolean threadSuspended;
 	private JScrollPane mainContentScrollPane = null;
 	private JEditorPane mainContentArea = new JEditorPane();
-	private JButton sendMessageButton = new JButton();
+	//private JButton sendMessageButton = new JButton();
 	private static JTextArea messageArea = new JTextArea();
-	private static JComboBox nicksComboBox = new JComboBox();
+	//private static JComboBox nicksComboBox = new JComboBox();
 	private LoadingPanel loadingPanel;
+	private UsersPanel usersPanel;
 	private Document doc = null;
 	
 	private Hashtable userColorTable = new Hashtable();
 	private ArrayList<String> usersHost = new ArrayList<String>();
-	String[] colors = {"purple","black","green","yellow","pink","gray"};
+	String[] colors = {"purple","black","green","pink","gray"};
 	
-	public ChatPanel() {
+	public ChatPanel(HandleApplet parent) {
 		
 		this.setLayout(null);
-		this.setSize(new Dimension(820,480));
+		
+		this.usersPanel = new UsersPanel(parent);
+		this.usersPanel.setSize(100,100);
+		
+		//this.setSize(new Dimension(600,480));
 		
 		this.loadingPanel = new LoadingPanel();
 		this.loadingPanel.setSize(300,300);
 		this.loadingPanel.setLocation(250, 50);
 		
-		nicksComboBox.addItem(Constants.NICKSCOMBOBOX_FIRST_ELEMENT);
+		//nicksComboBox.addItem(Constants.NICKSCOMBOBOX_FIRST_ELEMENT);
 		mainContentArea.setEditable(false);
 		mainContentArea.setContentType(Constants.MAINCONTENT_CONTENT_TYPE);
 		mainContentArea.setEditorKit(new HTMLEditorKit());
 		setVisible(true);
 		
 		mainContentArea.setBackground(Color.WHITE);
-		sendMessageButton.setText(Constants.SEND_BUTTON_NAME);
-		mainContentArea.setSize(800, 390);
+		//sendMessageButton.setText(Constants.SEND_BUTTON_NAME);
+		//mainContentArea.setSize(700, 390);
 		mainContentScrollPane = new JScrollPane(mainContentArea);
 
 		/**
@@ -77,7 +83,7 @@ public class ChatPanel extends JPanel{
 		messageArea.setAutoscrolls(true);
 		messageArea.setLineWrap(true);
 		messageArea.setWrapStyleWord(false);
-		sendMessageButton.setEnabled(false);
+		//sendMessageButton.setEnabled(false);
 		
 		
 		messageArea.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -100,7 +106,7 @@ public class ChatPanel extends JPanel{
 
 		});
 		
-		sendMessageButton.addActionListener(new ActionListener(){
+		/*sendMessageButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
@@ -112,21 +118,28 @@ public class ChatPanel extends JPanel{
 				sendMessage();
 				
 			}
-		});
+		});*/
 
+		JScrollPane scrollPane = new JScrollPane(this.usersPanel);
+		 
+		
 		add(mainContentScrollPane);
 		add(messageArea);
-		add(sendMessageButton);
-		add(nicksComboBox);
+		//add(sendMessageButton);
+		//add(nicksComboBox);
 		add(loadingPanel);
-
+		add(scrollPane);
+		
+		scrollPane.setBounds(810,5,100,390);
 		mainContentScrollPane.setBounds(5, 5, 800, 390);
 		mainContentArea.setBackground(Color.WHITE);
-		messageArea.setBounds(5, 400, 728, 70);
-		sendMessageButton.setBounds(738, 435, 68, 33);
-		nicksComboBox.setBounds(738, 400, 68, 33);
+		messageArea.setBounds(5, 400, 904, 70);
+		messageArea.setBorder(BorderFactory.createLineBorder(Color.black));
+		//sendMessageButton.setBounds(738, 435, 68, 33);
+		//nicksComboBox.setBounds(738, 400, 68, 33);
 
 		appendText(mainContentArea, IRCIvelaClientStringUtils.singleton().showVersion());
+		appendText(mainContentArea, "<b>USER: " + StaticData.nick+"</b>");
 	}
 	
 	private JEditorPane appendText(JEditorPane tA, String text) {
@@ -155,13 +168,9 @@ public class ChatPanel extends JPanel{
 		StaticData.clientMessage = tempMsg;
 		
 		Channel channel = session.getChannel(StaticData.channel);
-		if(nicksComboBox.getSelectedItem().equals("All")){
-			//session.sayChannel(StaticData.clientMessage, channel);
-			channel.say(StaticData.clientMessage);
-		} else {
-			session.sayPrivate(nicksComboBox.getSelectedItem().toString(), StaticData.clientMessage);
-			
-		}
+		
+		channel.say(StaticData.clientMessage);
+		 
 		
 		StaticData.chatMessage = IRCIvelaClientStringUtils.singleton().setMyMessage(StaticData.clientMessage);
 		messageArea.setText(Constants.BLANK_STRING);
@@ -192,15 +201,15 @@ public class ChatPanel extends JPanel{
 		//System.out.println("2:" + connectedUsers); 
 		List<String> activeUsers = new ArrayList<String>();
 		 
-		for(int j = 0; j < nicksComboBox.getItemCount(); j++){
+		/*for(int j = 0; j < nicksComboBox.getItemCount(); j++){
 			activeUsers.add(nicksComboBox.getItemAt(j).toString());
-		}
+		}*/
 		
 		//System.out.println("3:" + activeUsers); 
 		
-		for(int l = 0; l < connectedUsers.size(); l++){
+		/*for(int l = 0; l < connectedUsers.size(); l++){
 			if(!activeUsers.contains(connectedUsers.get(l))) nicksComboBox.addItem(connectedUsers.get(l));
-		}
+		}*/
 	}
 	
 	
@@ -212,9 +221,9 @@ public class ChatPanel extends JPanel{
 		List<String> activeUsers = new ArrayList<String>();
 		
 		 
-		for(int j = 0; j < nicksComboBox.getItemCount(); j++){
+		/*for(int j = 0; j < nicksComboBox.getItemCount(); j++){
 			activeUsers.add(nicksComboBox.getItemAt(j).toString());
-		}
+		}*/
 	
 		for(int l = 0; l < connectedUsers.size(); l++){
 			 
@@ -228,7 +237,7 @@ public class ChatPanel extends JPanel{
 		//enabling gui;
 		messageArea.setEnabled(true);
 		messageArea.setEditable(true);
-		sendMessageButton.setEnabled(true);
+		//sendMessageButton.setEnabled(true);
 		messageArea.setAutoscrolls(true);
 		messageArea.setLineWrap(true);
 		messageArea.setWrapStyleWord(false);
@@ -261,20 +270,22 @@ public class ChatPanel extends JPanel{
 		if(StaticData.teacher.equalsIgnoreCase(nick.trim())){
 			System.out.println("louco");
 			userColorTable.put(nick.trim(), "red");
-			nicksComboBox.addItem(nick.trim());
+			//nicksComboBox.addItem(nick.trim());
 			return;
 		}
 			
 		int pos = IRCIvelaClientStringUtils.generateRandomNumber(colors.length-1);
 		
 		userColorTable.put(nick.trim(), colors[pos]);
-		nicksComboBox.addItem(nick.trim());
+		//nicksComboBox.addItem(nick.trim());
+		this.usersPanel.addUser(nick.trim());
 	}
 
 	public void removeUserTable(String nick){
 		userColorTable.remove(nick.trim());
-		nicksComboBox.removeItem(nick.trim());
-		nicksComboBox.repaint();
+		//nicksComboBox.removeItem(nick.trim());
+		this.usersPanel.removeUser(nick.trim());
+		//nicksComboBox.repaint();
 	}
 
 	public Session getSession() {
