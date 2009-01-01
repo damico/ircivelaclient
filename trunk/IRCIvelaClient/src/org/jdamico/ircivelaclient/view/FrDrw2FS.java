@@ -21,6 +21,8 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.jdamico.ircivelaclient.comm.ServletConnection;
@@ -43,6 +45,7 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     private JButton rubberImg = new JButton();
     private JButton sendAllImg = new JButton();
     private JButton updateImg = new JButton();
+    private JFileChooser jfChooser = new JFileChooser();
     
     private boolean rubberToggle = false;
     private ArrayList<P2P> drawn = new ArrayList<P2P>();
@@ -76,11 +79,26 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     }
     
     public void init(){
+    	
+    	jfChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    	
+    	
     	saveImg.setText("Save");
     	saveImg.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				write2FS(getImage());
+				int returnVal = jfChooser.showOpenDialog(chatPanel);
+				
+		        if (returnVal == JFileChooser.APPROVE_OPTION) {
+		            File file = jfChooser.getSelectedFile();
+		            //This is where a real application would open the file.
+		            String fileName = JOptionPane.showInputDialog("Enter file name");
+		            String where = file.getAbsolutePath()+File.separatorChar+fileName+".png";
+		            write2FS(getImage(),where);
+		        } else {
+		            System.out.println("Open command cancelled by user.");
+		        }
+		        
 			}
 		});
     	
@@ -225,9 +243,9 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
         return bufferedImage;
     }
     
-    public void write2FS(RenderedImage rendImage){
+    public void write2FS(RenderedImage rendImage,String path){
         try {
-            File file = new File("/home/jefferson/temp.png");
+            File file = new File(path);
             ImageIO.write(rendImage, "png", file);
         } catch (IOException ioe) {
         	ioe.printStackTrace();
