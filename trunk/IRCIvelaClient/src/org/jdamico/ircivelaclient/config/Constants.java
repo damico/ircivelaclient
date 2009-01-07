@@ -1,9 +1,11 @@
 package org.jdamico.ircivelaclient.config;
 
+import org.jdamico.ircivelaclient.view.StaticData;
+
 public class Constants {
 	
 	public static final String APPNAME = "IRCIvelaClient";
-	public static final String APPVERSION = "0.2.2-Bail Organa";
+	public static final String APPVERSION = "0.2.3-General Veers";
 	
 	public static final String PARAM_SERVER = "server";
 	public static final String PARAM_TEACHER = "teacher";
@@ -17,7 +19,8 @@ public class Constants {
 	public static final String TEACHER_IDENTIFIER = "|";	
 	public static final String LINE_BREAK = "\n";
 	public static final String SERVLET_PATH = "http://200.17.41.212:8080/ivela-web/SaveObjectServlet";
-	public static final String REMOTE_FILE_PATH= "http://200.17.41.212/public_content/chat.txt";
+	public static final String REMOTE_FILE_PATH= "http://200.17.41.212/public_content/"+StaticData.classFolder+"/chat.txt";
+	public static final String CLASS_FOLDER= "folder";
 	
 	public static final int CONN_TIMEOUT = 30; /* 30 = 60 seconds*/
 	public static final int UDP_PORT = 6668; 
