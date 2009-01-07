@@ -148,7 +148,8 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     			System.out.println("SEND");
     			System.out.println(snd);
     			try {
-					servletConnection.send(snd);
+    				
+					servletConnection.send(StaticData.classFolder+"@"+snd);
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -186,12 +187,15 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     			
     		}
     	});
+    	 
+    	if(StaticData.isTeacher){
+    		add(sendAllImg);
+        	add(rubberImg);
+        	add(eraseImg);
+    	}
     	
-    	add(sendAllImg);
-    	add(rubberImg);
-    	add(saveImg);
-    	add(eraseImg);
     	add(updateImg);
+    	add(saveImg);
     	g2dFS = bufferedImage.createGraphics();
     	 
     }

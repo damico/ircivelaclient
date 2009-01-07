@@ -38,8 +38,17 @@ public class HandleApplet extends JApplet  {
 		StaticData.server = getParameter(Constants.PARAM_SERVER);
 		StaticData.teacher = getParameter(Constants.PARAM_TEACHER);
 		StaticData.channel = getParameter(Constants.PARAM_CHANNEL);
-		//System.out.println(StaticData.channel);
 		StaticData.nick = getParameter(Constants.PARAM_NICK);
+		
+		if(StaticData.teacher.trim().equals(StaticData.nick.trim())){
+			StaticData.isTeacher = true;
+		}
+		
+		//System.out.println(StaticData.channel);
+		String tempFolder = getParameter(Constants.CLASS_FOLDER);
+		if(tempFolder!=null && !tempFolder.equals("")){
+			StaticData.classFolder = tempFolder;
+		}
 		setLayout(new BorderLayout());
 		
 		//size and colour configuration
