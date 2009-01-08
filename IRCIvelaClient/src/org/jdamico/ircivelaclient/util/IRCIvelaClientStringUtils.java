@@ -27,19 +27,32 @@ public class IRCIvelaClientStringUtils {
 		return formatedVersion;
 	}
 
-	public String setMessage(String unformatedMessage, int row, String color) {
+	public String setMessage(String unformatedMessage, int row, String color, boolean isTeacher, boolean isPvt) {
 		String formatedMessage = null;
 		String fontColor = "'"+color+"'";
 		String bgColor = "'#FFFFFF'";
-
-		if (unformatedMessage.contains("|" + StaticData.teacher)) {
-			fontColor = "'red'";
-		} 
-
-		if (row % 2 == 0)
-			bgColor = "#EFEFEF";
-		else
+		
+		if(isTeacher){
+				String msgTB_a = "<table width=\"100%\" bgcolor='"
+				+ "black"
+				+ "' border ='0' cellpadding='4'><tr valign='top'><td width='90'>";
+				String msgTB_b = "</td><td>";
+				String msgTB_c = "</td></tr></table>";
+		
+				formatedMessage = msgTB_a +getTimeTeacher()+msgTB_b + "<font color="
+						+ "white" + " face='Arial' ><b>" + unformatedMessage.replaceAll("|", "")
+						+ "</b></font>" + msgTB_c;
+		
+				return formatedMessage;
+		}
+		if(isPvt){
 			bgColor = "#FFFFFF";
+		}else{
+			if (row % 2 == 0)
+				bgColor = "#EFEFEF";
+			else
+				bgColor = "#FFFFFF";
+		}
 
 		String msgTB_a = "<table width=\"100%\" bgcolor='"
 				+ bgColor
@@ -67,6 +80,15 @@ public class IRCIvelaClientStringUtils {
 		formatter = new SimpleDateFormat("HH:mm:ss");
 		String stime = formatter.format(date);
 		return "<font color'#efefef'>[" + stime + "]&nbsp</font>";
+	}
+	
+	public String getTimeTeacher() {
+		 
+		Format formatter;
+		Date date = new Date();
+		formatter = new SimpleDateFormat("HH:mm:ss");
+		String stime = formatter.format(date);
+		return "<font color='white'>[" + stime + "]&nbsp</font>";
 	}
 
 	public Color getColorParameter(String strColor) {

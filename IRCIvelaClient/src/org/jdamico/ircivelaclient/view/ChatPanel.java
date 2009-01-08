@@ -97,7 +97,7 @@ public class ChatPanel extends JPanel{
 					//update my MsgContentArea
 					String tempMsg = messageArea.getText().replaceAll("Constants.TEACHER_IDENTIFIER", Constants.BLANK_STRING);
 					tempMsg = messageArea.getText().replaceAll(Constants.LINE_BREAK, Constants.BLANK_STRING);
-					updateMainContentArea("Me: "+tempMsg,"blue");
+					updateMainContentArea("Me: "+tempMsg,"blue", StaticData.isTeacher);
 					//send remote msg to IRC
 					sendMessage();
 				}
@@ -134,7 +134,7 @@ public class ChatPanel extends JPanel{
 		mainContentScrollPane.setBounds(5, 5, 800, 390);
 		mainContentArea.setBackground(Color.WHITE);
 		messageArea.setBounds(5, 400, 904, 70);
-		messageArea.setBorder(BorderFactory.createLineBorder(Color.black));
+		messageArea.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Type you message here."));
 		//sendMessageButton.setBounds(738, 435, 68, 33);
 		//nicksComboBox.setBounds(738, 400, 68, 33);
 
@@ -247,10 +247,10 @@ public class ChatPanel extends JPanel{
 		//HandleApplet.setConnectedUsers();
 	}
 	
-	public void updateMainContentArea(String msg, String color){
+	public void updateMainContentArea(String msg, String color, boolean isTeacher){
 		mainContentArea.scrollRectToVisible(new Rectangle(0,mainContentArea.getBounds(null).height, 1, 1));
 		//System.out.println("color: " +color);
-		appendText(mainContentArea, IRCIvelaClientStringUtils.singleton().setMessage(msg, row,color));
+		appendText(mainContentArea, IRCIvelaClientStringUtils.singleton().setMessage(msg, row,color,isTeacher,false));
 		row++;
 
 		mainContentArea.setFocusable(true);
@@ -268,8 +268,9 @@ public class ChatPanel extends JPanel{
 			return;
 		
 		if(StaticData.teacher.equalsIgnoreCase(nick.trim())){
-			System.out.println("louco");
+			 
 			userColorTable.put(nick.trim(), "red");
+			this.usersPanel.addUser(nick.trim());
 			//nicksComboBox.addItem(nick.trim());
 			return;
 		}

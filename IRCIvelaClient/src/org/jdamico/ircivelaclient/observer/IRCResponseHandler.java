@@ -56,7 +56,10 @@ public class IRCResponseHandler implements Observer {
 		        StaticData.chatMessage = tempStr;
 		        //System.out.println("teste--->"+event.getMessage());
 		        String color = chatPanel.getColor(messageEvent.getNick().trim());
-		        chatPanel.updateMainContentArea(tempStr,color);
+		        if(messageEvent.getNick().trim().equals(StaticData.teacher))
+		        	chatPanel.updateMainContentArea(tempStr,color,true);
+		        else
+		        	chatPanel.updateMainContentArea(tempStr,color,false);
 				
 			}else if (event.getType() == Type.PRIVATE_MESSAGE){
 				System.out.println("PRIVATE_MESSAGE");
@@ -64,6 +67,7 @@ public class IRCResponseHandler implements Observer {
 				String what = messageEvent.getMessage();
 				String whom = messageEvent.getNick().trim();
 				handleApplet.updatePvt(whom,whom+": "+ what);
+				handleApplet.setTabForegroundColor(messageEvent.getNick().trim(), 2);
 				
 			}else if (event.getType() == Type.JOIN){
 				System.out.println("JOIN");
@@ -77,11 +81,15 @@ public class IRCResponseHandler implements Observer {
 				QuitEvent quitEvent = (QuitEvent)event;
 				chatPanel.removeUserTable(quitEvent.getNick());
 				chatPanel.removeUserHost(quitEvent.getHostName());
+				//chatPanel.remove
 				String tempStr = quitEvent.getNick() + " has left (" + quitEvent.getQuitMessage()+")";
 		        StaticData.chatMessage = tempStr;
 		        //System.out.println("teste--->"+event.getMessage());
 		        String color = chatPanel.getColor(quitEvent.getNick().trim());
-		        chatPanel.updateMainContentArea(tempStr,color);
+		        if(quitEvent.getNick().equals(StaticData.teacher))
+		        	chatPanel.updateMainContentArea(tempStr,color,true);
+		        else
+		        	chatPanel.updateMainContentArea(tempStr,color,false);
 			}else if(event.getType() == Type.WHOIS_EVENT){
 				
 			}

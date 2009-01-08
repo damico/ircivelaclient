@@ -67,7 +67,7 @@ public class PvtChatPanel extends JPanel {
 							Constants.BLANK_STRING);
 					tempMsg = messageArea.getText().replaceAll(
 							Constants.LINE_BREAK, Constants.BLANK_STRING);
-					updateMainContentArea("Me: " + tempMsg, "blue");
+					updateMainContentArea("Me: " + tempMsg, "blue", StaticData.isTeacher);
 					// send remote msg to IRC
 					sendMessage();
 				}
@@ -99,12 +99,12 @@ public class PvtChatPanel extends JPanel {
 		this.add(close);
 	}
 
-	public void updateMainContentArea(String msg, String color) {
+	public void updateMainContentArea(String msg, String color, boolean isTeacher) {
 		mainContentArea.scrollRectToVisible(new Rectangle(0, mainContentArea
 				.getBounds(null).height, 1, 1));
 		// System.out.println("color: " +color);
 		appendText(mainContentArea, IRCIvelaClientStringUtils.singleton()
-				.setMessage(msg, row, color));
+				.setMessage(msg, row, color, isTeacher,true));
 		row++;
 
 		mainContentArea.setFocusable(true);

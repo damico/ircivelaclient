@@ -4,10 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.util.HashMap;
 
+import javax.swing.BorderFactory;
 import javax.swing.JApplet;
 import javax.swing.JTabbedPane;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.jdamico.ircivelaclient.config.Constants;
 import org.jdamico.ircivelaclient.listener.ListenConversation;
@@ -25,14 +26,15 @@ public class HandleApplet extends JApplet  {
 	private ChatPanel chatPanel;
 	private FrDrw2FS drawPanel;
 	private HashMap<String, PvtChatPanel> pvtTabs;
-	
+	private int actualTabIndex;
 	
 	
 	//Executed when the applet is first created.
 	public void init() {
 
-		//System.out.println("--"+getCodeBase());
+		 
 		
+		//System.out.println("--"+getCodeBase());
 		ChatPrinter.print("init(): begin");
 
 		StaticData.server = getParameter(Constants.PARAM_SERVER);
@@ -65,6 +67,8 @@ public class HandleApplet extends JApplet  {
 		 
 		//creating panels
 		this.mainTabbedPane = new JTabbedPane();
+		this.mainTabbedPane.setBorder(BorderFactory.createLineBorder(Color.black));
+		
 		this.chatPanel = new ChatPanel(this);
 		this.drawPanel = new FrDrw2FS(this.chatPanel);
 		
@@ -84,22 +88,18 @@ public class HandleApplet extends JApplet  {
 		irResponseHandler.setHandleApplet(this);
 		this.chatter.addObserver(irResponseHandler);
 		
+		
 		//add tab listener
-		/*mainTabbedPane.addChangeListener(new ChangeListener(){
+		mainTabbedPane.addChangeListener(new ChangeListener(){
 
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				int index = ((JTabbedPane)e.getSource()).getSelectedIndex();
-				
-				if(index==1){
-					
-					drawPanel.transfer();
-				}
-				
-				
+				mainTabbedPane.setForegroundAt(index, Color.black);
+				actualTabIndex = index;
 			}
-			
-		});*/
+
+		}); 
 		
 		this.pvtTabs = new HashMap<String, PvtChatPanel>();
 		//end
@@ -138,10 +138,15 @@ public class HandleApplet extends JApplet  {
 	}
 	
 	public PvtChatPanel addTab(String title){
+		
+		 
+		
 		if(this.pvtTabs.containsKey(title))
 			return this.pvtTabs.get(title);
 		PvtChatPanel pvtChatPanel = new PvtChatPanel(this,title,this.chatPanel.getSession());
 		this.mainTabbedPane.add(pvtChatPanel,title);
+		
+		//this.mainTabbedPane.setForegroundAt(1, Color.red);
 		this.pvtTabs.put(title, pvtChatPanel);
 		return pvtChatPanel;
 	}
@@ -158,7 +163,28 @@ public class HandleApplet extends JApplet  {
 		if(pvtChatPanel==null){
 			pvtChatPanel = this.addTab(whom);
 		}
-		pvtChatPanel.updateMainContentArea(what, "red");
+		
+		if(whom.equalsIgnoreCase(StaticData.teacher)) 
+			pvtChatPanel.updateMainContentArea(what, "red", true);
+		else
+			pvtChatPanel.updateMainContentArea(what, "red", false);
+	}
+	
+	//1-black
+	//2-red
+	public void setTabForegroundColor(String title, int colorID){
+		for(int i=0;i<this.mainTabbedPane.getTabCount();i++){
+			if(this.mainTabbedPane.getTitleAt(i).equals(title)){
+				if(i==actualTabIndex && colorID==2)
+					return;
+				if(colorID==1)
+					this.mainTabbedPane.setForegroundAt(i, Color.black);
+				else if(colorID==2)
+					this.mainTabbedPane.setForegroundAt(i, Color.red);
+				break;
+			}
+		}
+		 
 	}
 		
 }
