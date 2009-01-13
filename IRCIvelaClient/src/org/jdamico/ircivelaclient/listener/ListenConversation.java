@@ -82,6 +82,7 @@ public class ListenConversation extends DefaultIRCEventListener implements Runna
     protected void handleJoinCompleteEvent(JoinCompleteEvent event)
     {
         event.getChannel().say("Connected");
+        StaticData.nick = session.getNick();
         this.parent.getChatPanel().setSession(session);
         
         /*Channel currentChannel = event.getChannel();

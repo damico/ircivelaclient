@@ -5,7 +5,7 @@ import org.jdamico.ircivelaclient.view.StaticData;
 public class Constants {
 	
 	public static final String APPNAME = "IRCIvelaClient";
-	public static final String APPVERSION = "0.2.4-Captain Needa";
+	public static final String APPVERSION = "0.2.5-Droideka";
 	
 	public static final String PARAM_SERVER = "server";
 	public static final String PARAM_TEACHER = "teacher";

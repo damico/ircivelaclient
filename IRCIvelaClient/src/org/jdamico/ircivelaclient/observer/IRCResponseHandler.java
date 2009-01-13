@@ -50,8 +50,27 @@ public class IRCResponseHandler implements Observer {
 				
 			
 			}else if (event.getType() == Type.CHANNEL_MESSAGE){
-				System.out.println("CHANNEL_MESSAGE");
+				//System.out.println("CHANNEL_MESSAGE");
+				
+				
 				MessageEvent messageEvent = (MessageEvent)event;
+				
+				
+				if(messageEvent.getMessage().startsWith("QUITCHAT")){
+					chatPanel.removeUserTable(messageEvent.getNick());
+					chatPanel.removeUserHost(messageEvent.getHostName());
+					
+					String tempStr = messageEvent.getNick() + " has left ";
+			        StaticData.chatMessage = tempStr;
+			        //System.out.println("teste--->"+event.getMessage());
+			        String color = chatPanel.getColor(messageEvent.getNick().trim());
+			        if(messageEvent.getNick().equals(StaticData.teacher))
+			        	chatPanel.updateMainContentArea(tempStr,color,true);
+			        else
+			        	chatPanel.updateMainContentArea(tempStr,color,false);
+			        return;
+				}
+				
 				String tempStr = messageEvent.getNick() + ": " + messageEvent.getMessage();
 		        StaticData.chatMessage = tempStr;
 		        //System.out.println("teste--->"+event.getMessage());
