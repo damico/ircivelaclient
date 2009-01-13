@@ -134,7 +134,7 @@ public class ChatPanel extends JPanel{
 		mainContentScrollPane.setBounds(5, 5, 800, 390);
 		mainContentArea.setBackground(Color.WHITE);
 		messageArea.setBounds(5, 400, 904, 70);
-		messageArea.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Type you message here."));
+		messageArea.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Type your message here."));
 		//sendMessageButton.setBounds(738, 435, 68, 33);
 		//nicksComboBox.setBounds(738, 400, 68, 33);
 
@@ -187,10 +187,10 @@ public class ChatPanel extends JPanel{
 	 
 	
 	public void sendSystemMessage(String sysMsg) {
-
-		Channel channel = session.getChannel(StaticData.channel);
-		channel.say(StaticData.clientMessage);
-		
+		if(session!=null){
+			Channel channel = session.getChannel(StaticData.channel);
+			channel.say(StaticData.clientMessage);
+		}	
 	}
 	
 	public void setConnectedUsers(){

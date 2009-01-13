@@ -110,6 +110,7 @@ public class HandleApplet extends JApplet  {
 
 
 	public void destroy() {
+		chatPanel.sendSystemMessage("QUITCHAT");
 		ChatPrinter.print("destroy()");
 	}
  
