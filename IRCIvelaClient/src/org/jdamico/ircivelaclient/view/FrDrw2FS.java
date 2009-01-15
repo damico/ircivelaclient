@@ -16,7 +16,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
@@ -26,7 +25,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.jdamico.ircivelaclient.comm.ServletConnection;
-import org.jdamico.ircivelaclient.comm.UDPConnection;
 import org.jdamico.ircivelaclient.config.Constants;
 import org.jdamico.ircivelaclient.util.IRCIvelaClientStringUtils;
 import org.jdamico.ircivelaclient.util.P2P;
@@ -189,11 +187,10 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     	});
     	 
     	if(StaticData.isTeacher){
-    		add(sendAllImg);
-        	add(rubberImg);
-        	add(eraseImg);
+    		add(sendAllImg);	
     	}
-    	
+    	add(rubberImg);
+    	add(eraseImg);
     	add(updateImg);
     	add(saveImg);
     	g2dFS = bufferedImage.createGraphics();
