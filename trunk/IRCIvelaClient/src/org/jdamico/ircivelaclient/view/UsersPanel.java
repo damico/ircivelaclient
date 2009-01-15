@@ -5,47 +5,49 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Enumeration;
 
+import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JTree;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
 
-import org.jdamico.ircivelaclient.config.Constants;
-
-public class UsersPanel extends JPanel implements TreeSelectionListener, MouseListener{
+public class UsersPanel extends JPanel implements ListSelectionListener, MouseListener{
 	
-	private JTree usersPanel;
+	//private JTree usersPanel;
+	private JList usersListPanel;
+	private DefaultListModel listModel;
 	private JPopupMenu popupMenu;
-	private DefaultMutableTreeNode root;
+	 
     private Object selectedUser;
     private HandleApplet parent;
     
  
-    private int childIndex = 0;
+    
     Icon rootImg = new ImageIcon(this.getClass().getResource("/org/jdamico/ircivelaclient/view/images/icon-forum.gif"));
     Icon userImg = new ImageIcon(this.getClass().getResource("/org/jdamico/ircivelaclient/view/images/icon-online.gif"));
     
     
     
 	public UsersPanel(HandleApplet handleApplet) {
-		this.initializeTree();
+		this.initializeList();
 		this.initializePopMenu();
 		this.setLayout(new BorderLayout());
 		this.parent = handleApplet;
 		//this.setSize(new Dimension(100,100));
-		this.add(this.usersPanel,BorderLayout.CENTER);
-		
-		
+		this.add(new JScrollPane(this.usersListPanel),BorderLayout.CENTER);
+		 
+		this.usersListPanel.addListSelectionListener(this);
+		this.usersListPanel.addMouseListener(this);
 
 	}
 
@@ -65,59 +67,26 @@ public class UsersPanel extends JPanel implements TreeSelectionListener, MouseLi
 		
 	}
 	
-	public void initializeTree(){
-		Object[] hierarchy = new Object[]{Constants.PARAM_CHANNEL};
-		this.root =  new DefaultMutableTreeNode(hierarchy[0]);
-		
-		this.usersPanel = new JTree(this.root);
-		this.usersPanel.setScrollsOnExpand(true);
-		this.usersPanel.addTreeSelectionListener(this);
-		this.usersPanel.addMouseListener(this);
-		
-		DefaultTreeCellRenderer  rootRenderer = new DefaultTreeCellRenderer();
-		rootRenderer.setOpenIcon(rootImg);
-		rootRenderer.setClosedIcon(rootImg);
-		rootRenderer.setLeafIcon(userImg);
-		
-		this.usersPanel.setCellRenderer(rootRenderer);
+	public void initializeList(){
+		 this.listModel = new DefaultListModel();
+		 this.usersListPanel = new JList(listModel);
+		 this.usersListPanel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		 this.usersListPanel.setLayoutOrientation(JList.VERTICAL);
+
 	}
 	
 	public void addUser(Object user){
-		this.root.insert(new DefaultMutableTreeNode(user), childIndex++);
-		//this.usersPanel.repaint();
-		this.usersPanel.updateUI(); 
 		
+		listModel.addElement(user.toString());
+		 
 	}
 	
 	public void removeUser(String user){
 		 
-		int index = -1;
-		Enumeration<Object> children = this.root.children();
-		while(children.hasMoreElements()){
-			index++;
-			DefaultMutableTreeNode child = (DefaultMutableTreeNode)children.nextElement();
-			String userObject = (String)child.getUserObject();
-			if(userObject.equalsIgnoreCase(user))
-					break;
-			 
-				
-		}
-		if(index!=-1){
-			this.root.remove(index);
-			this.childIndex --;
-			this.usersPanel.updateUI();
-		}
-			
+		listModel.removeElement(user);
 	}
 
-	@Override
-	public void valueChanged(TreeSelectionEvent e) {
-		// TODO Auto-generated method stub
-		
-			selectedUser = this.usersPanel.getLastSelectedPathComponent();
-		 
-	}
-
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if(e.getClickCount()==2 && selectedUser!=null){
@@ -166,6 +135,24 @@ public class UsersPanel extends JPanel implements TreeSelectionListener, MouseLi
 	public void mouseReleased(MouseEvent e) {
 		 
 		
+	}
+
+	//from list
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		if (e.getValueIsAdjusting() == false) {
+
+	        if (usersListPanel.getSelectedIndex() == -1) {
+	        //No selection, disable fire button.
+	            
+
+	        } else {
+	        //Selection, enable the fire button.
+	           this.selectedUser = (String)usersListPanel.getSelectedValue();
+	           System.out.println(this.selectedUser);
+	        }
+	    }
+
 	}
 }
 
