@@ -1,19 +1,15 @@
 package org.jdamico.ircivelaclient.view;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -28,7 +24,6 @@ import jerklib.Session;
 import org.jdamico.ircivelaclient.config.Constants;
 import org.jdamico.ircivelaclient.util.IRCIvelaClientStringUtils;
 
-import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
 
 public class ChatPanel extends JPanel{
 	
