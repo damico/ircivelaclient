@@ -11,7 +11,6 @@ import java.util.Random;
 import java.util.StringTokenizer;
 
 import org.jdamico.ircivelaclient.config.Constants;
-import org.jdamico.ircivelaclient.view.StaticData;
 
 public class IRCIvelaClientStringUtils {
 	private static final IRCIvelaClientStringUtils getInstance = new IRCIvelaClientStringUtils();
@@ -22,8 +21,8 @@ public class IRCIvelaClientStringUtils {
 
 	public String showVersion() {
 		String formatedVersion = null;
-		formatedVersion = "<font color='green'>" + Constants.APPNAME + " "
-				+ Constants.APPVERSION + "</font><br>";
+		formatedVersion = "<font color='green'><b>" + Constants.APPNAME + " "
+				+ Constants.APPVERSION + "</b></font>";
 		return formatedVersion;
 	}
 

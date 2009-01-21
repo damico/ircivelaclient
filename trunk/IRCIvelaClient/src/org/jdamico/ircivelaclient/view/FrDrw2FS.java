@@ -234,17 +234,17 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     }    
     
     public void process(String rcv){
-    	System.out.println("RCCV-->"+rcv);
+    	//System.out.println("RCCV-->"+rcv);
     	this.drawn = (ArrayList<P2P>)IRCIvelaClientStringUtils.degenerateInfoString(rcv);
     	repaint();
     }
     
-    public RenderedImage getImage() {
+    private RenderedImage getImage() {
         g2dFS.dispose();   
         return bufferedImage;
     }
     
-    public void write2FS(RenderedImage rendImage,String path){
+    private void write2FS(RenderedImage rendImage,String path){
         try {
             File file = new File(path);
             ImageIO.write(rendImage, "png", file);
@@ -275,6 +275,7 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     		g2dTemp.setBackground(Color.black);
     		g2dTemp.clearRect(p.x, p.y, 20, 20);
     	}
+    	this.g2dFS = g2dTemp;
     }
 }
 
