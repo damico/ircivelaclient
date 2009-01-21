@@ -101,19 +101,7 @@ public class ChatPanel extends JPanel{
 
 		});
 		
-		/*sendMessageButton.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				
-				//update my MsgContentArea
-				String tempMsg = messageArea.getText().replaceAll("Constants.TEACHER_IDENTIFIER", Constants.BLANK_STRING);
-				tempMsg = messageArea.getText().replaceAll(Constants.LINE_BREAK, Constants.BLANK_STRING);
-				updateMainContentArea("Me: "+tempMsg,"blue");
-				//send remote msg to IRC
-				sendMessage();
-				
-			}
-		});*/
+		 
 
 		JScrollPane scrollPane = new JScrollPane(this.usersPanel);
 		 
@@ -134,7 +122,7 @@ public class ChatPanel extends JPanel{
 		//nicksComboBox.setBounds(738, 400, 68, 33);
 
 		appendText(mainContentArea, IRCIvelaClientStringUtils.singleton().showVersion());
-		appendText(mainContentArea, "<b>USER: " + StaticData.nick+"</b>");
+		appendText(mainContentArea, "<b>USER: " + StaticData.nick+"</b> <b>ROOM: </b>" + StaticData.channel);
 	}
 	
 	private JEditorPane appendText(JEditorPane tA, String text) {
