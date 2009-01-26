@@ -43,6 +43,7 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     private JButton rubberImg = new JButton();
     private JButton sendAllImg = new JButton();
     private JButton updateImg = new JButton();
+    private JButton testButton = new JButton();
     private JFileChooser jfChooser = new JFileChooser();
     
     private boolean rubberToggle = false;
@@ -73,6 +74,7 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
         };*/
         //t.start();
         
+        
         this.init();
     }
     
@@ -82,6 +84,7 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     	
     	
     	saveImg.setText("Save");
+    	saveImg.setToolTipText("Save Blackboard image in your HD.");
     	saveImg.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -102,9 +105,13 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     	
     	
     	eraseImg.setText("Erase");
+    	eraseImg.setToolTipText("Erase all you Blackboard.");
     	eraseImg.addActionListener(new ActionListener(){
     		@Override
     		public void actionPerformed(ActionEvent e) {
+    			int confirm = JOptionPane.showConfirmDialog(chatPanel.getParent(), "Are you sure?");
+    			if(confirm == JOptionPane.NO_OPTION)
+    				return;
     			if(g2d!=null && g2dFS!=null){
     				g2dFS.setBackground(Color.black);
         			g2d.setBackground(Color.black);
@@ -120,6 +127,7 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     	});
     	
     	rubberImg.setText("Rubber");
+    	rubberImg.setToolTipText("Rubber feature. Erase only what you want to.");
     	rubberImg.addActionListener(new ActionListener(){
     		@Override
     		public void actionPerformed(ActionEvent e) {
@@ -138,16 +146,19 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     	});
     	
     	sendAllImg.setText("Send");
+    	sendAllImg.setToolTipText("Send your draw to the server.");
     	sendAllImg.addActionListener(new ActionListener(){
     		@Override
     		public void actionPerformed(ActionEvent e) {
     			String snd = IRCIvelaClientStringUtils.generateInfoString(drawn);
     			
-    			System.out.println("SEND");
-    			System.out.println(snd);
+    			//System.out.println("SEND");
+    			//System.out.println(snd);
     			try {
     				
 					servletConnection.send(StaticData.classFolder+"@"+snd);
+					
+					JOptionPane.showMessageDialog(chatPanel.getParent(), "Picture sent to server. \nPlease, notify your students to update their blackboards.");
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -169,6 +180,7 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     	});
     	
     	updateImg.setText("Update");
+    	updateImg.setToolTipText("Update the BlackBoard with a new draw.");
     	updateImg.addActionListener(new ActionListener(){
     		@Override
     		public void actionPerformed(ActionEvent e) {
@@ -185,7 +197,17 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     			
     		}
     	});
-    	 
+    	
+    	testButton.setText("Test");
+    	testButton.setToolTipText("Test button.");
+    	testButton.addActionListener(new ActionListener(){
+    		@Override
+    		public void actionPerformed(ActionEvent e) {
+    			 
+    			chatPanel.getSession().close("Closed browser.");
+    		}
+    	});
+    	
     	if(StaticData.isTeacher){
     		add(sendAllImg);	
     	}
@@ -193,6 +215,7 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     	add(eraseImg);
     	add(updateImg);
     	add(saveImg);
+    	//add(testButton);
     	g2dFS = bufferedImage.createGraphics();
     	 
     }
@@ -268,14 +291,16 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     	for(P2P p2p : drawn){
     		
     		g2dTemp.drawLine(p2p.p1.x, p2p.p1.y, p2p.p2.x, p2p.p2.y);
-    		
+    		g2dFS.drawLine(p2p.p1.x, p2p.p1.y, p2p.p2.x, p2p.p2.y);
     	}
     	
     	for(Point p : erased){
     		g2dTemp.setBackground(Color.black);
     		g2dTemp.clearRect(p.x, p.y, 20, 20);
+    		g2dFS.setBackground(Color.black);
+    		g2dFS.setBackground(Color.black);
     	}
-    	this.g2dFS = g2dTemp;
+    	
     }
 }
 
