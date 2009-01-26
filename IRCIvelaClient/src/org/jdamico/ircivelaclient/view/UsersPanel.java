@@ -19,7 +19,6 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 public class UsersPanel extends JPanel implements ListSelectionListener, MouseListener{
 	

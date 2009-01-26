@@ -37,7 +37,7 @@ public class ChatPanel extends JPanel{
 	private JScrollPane mainContentScrollPane = null;
 	private JEditorPane mainContentArea = new JEditorPane();
 	//private JButton sendMessageButton = new JButton();
-	private static JTextArea messageArea = new JTextArea();
+	private JTextArea messageArea = new JTextArea();
 	//private static JComboBox nicksComboBox = new JComboBox();
 	private LoadingPanel loadingPanel;
 	private UsersPanel usersPanel;
@@ -88,13 +88,20 @@ public class ChatPanel extends JPanel{
 
 			private void msgKeyPressed(KeyEvent evt) {
 				if (evt.getKeyCode() == KeyEvent.VK_ENTER){
+					 
+					 
+						 
+						//update my MsgContentArea
+						String tempMsg = messageArea.getText().replaceAll("Constants.TEACHER_IDENTIFIER", Constants.BLANK_STRING).trim();
+						if(!tempMsg.equalsIgnoreCase("") && !tempMsg.equalsIgnoreCase("\n") ){
+							tempMsg = messageArea.getText().replaceAll(Constants.LINE_BREAK, Constants.BLANK_STRING);
+							updateMainContentArea("Me: "+tempMsg,"blue", StaticData.isTeacher);
+							//send remote msg to IRC
+							sendMessage();
+						}
+						messageArea.setText("");
+						messageArea.setCaretPosition(0);
 					
-					//update my MsgContentArea
-					String tempMsg = messageArea.getText().replaceAll("Constants.TEACHER_IDENTIFIER", Constants.BLANK_STRING);
-					tempMsg = messageArea.getText().replaceAll(Constants.LINE_BREAK, Constants.BLANK_STRING);
-					updateMainContentArea("Me: "+tempMsg,"blue", StaticData.isTeacher);
-					//send remote msg to IRC
-					sendMessage();
 				}
 					
 			}
@@ -122,7 +129,7 @@ public class ChatPanel extends JPanel{
 		//nicksComboBox.setBounds(738, 400, 68, 33);
 
 		appendText(mainContentArea, IRCIvelaClientStringUtils.singleton().showVersion());
-		appendText(mainContentArea, "<b>USER: " + StaticData.nick+"</b> <b>ROOM: </b>" + StaticData.channel);
+		appendText(mainContentArea, "<b><font color='blue'>USER: </font>" + StaticData.nick+"</b> <b><font color='blue'>ROOM: </font></b>" + StaticData.channel+"<br />");
 	}
 	
 	private JEditorPane appendText(JEditorPane tA, String text) {
