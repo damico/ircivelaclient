@@ -81,7 +81,7 @@ public class PvtChatPanel extends JPanel {
 		this.close.setSize(100, 20);
 		this.close.addActionListener(new ActionListener() {
 
-			@Override
+
 			public void actionPerformed(ActionEvent e) {
 				parent.removeTab(title);
 			}

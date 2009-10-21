@@ -31,7 +31,6 @@ public class IRCResponseHandler implements Observer {
 		this.chatPanel = chatPanel;
 	}
 	
-	@Override
 	public void update(Observable o, Object arg) {
 		 
 		if(arg instanceof IRCEvent){
