@@ -86,7 +86,7 @@ public class UsersPanel extends JPanel implements ListSelectionListener, MouseLi
 	}
 
 	
-	@Override
+
 	public void mouseClicked(MouseEvent e) {
 		if(e.getClickCount()==2 && selectedUser!=null){
 		     
@@ -112,32 +112,32 @@ public class UsersPanel extends JPanel implements ListSelectionListener, MouseLi
 		}
 	}
 
-	@Override
+
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+
 	public void mouseReleased(MouseEvent e) {
 		 
 		
 	}
 
 	//from list
-	@Override
+
 	public void valueChanged(ListSelectionEvent e) {
 		if (e.getValueIsAdjusting() == false) {
 
@@ -159,7 +159,7 @@ public class UsersPanel extends JPanel implements ListSelectionListener, MouseLi
 //Define ActionListener
 class PopupActionListener implements ActionListener {
 
-	@Override
+
 	public void actionPerformed(ActionEvent e) {
 		 System.out.println("Selected: " + e.getActionCommand());
 		

@@ -41,6 +41,8 @@ public class HandleApplet extends JApplet  {
 		StaticData.teacher = getParameter(Constants.PARAM_TEACHER);
 		StaticData.channel = getParameter(Constants.PARAM_CHANNEL);
 		StaticData.nick = getParameter(Constants.PARAM_NICK);
+		StaticData.remoteFile = getParameter(Constants.PARAM_REMOTE_FILE);
+		StaticData.remoteServlet = getParameter(Constants.PARAM_REMOTE_SERVLET);
 		
 		if(StaticData.teacher.trim().equals(StaticData.nick.trim())){
 			StaticData.isTeacher = true;
@@ -92,7 +94,7 @@ public class HandleApplet extends JApplet  {
 		//add tab listener
 		mainTabbedPane.addChangeListener(new ChangeListener(){
 
-			@Override
+
 			public void stateChanged(ChangeEvent e) {
 				int index = ((JTabbedPane)e.getSource()).getSelectedIndex();
 				mainTabbedPane.setForegroundAt(index, Color.black);

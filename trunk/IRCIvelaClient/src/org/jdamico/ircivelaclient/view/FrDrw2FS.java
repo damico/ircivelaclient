@@ -59,7 +59,7 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         //this.udpConnection = new UDPConnection(Constants.UDP_PORT+1);
-        this.servletConnection = new ServletConnection(Constants.SERVLET_PATH);
+        this.servletConnection = new ServletConnection(StaticData.remoteServlet);
         this.chatPanel = chatPanel;
         //listening
         /*Thread t = new Thread(){
@@ -86,7 +86,6 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     	saveImg.setText("Save");
     	saveImg.setToolTipText("Save Blackboard image in your HD.");
     	saveImg.addActionListener(new ActionListener(){
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				int returnVal = jfChooser.showOpenDialog(chatPanel);
 				
@@ -107,7 +106,7 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     	eraseImg.setText("Erase");
     	eraseImg.setToolTipText("Erase all you Blackboard.");
     	eraseImg.addActionListener(new ActionListener(){
-    		@Override
+
     		public void actionPerformed(ActionEvent e) {
     			int confirm = JOptionPane.showConfirmDialog(chatPanel.getParent(), "Are you sure?");
     			if(confirm == JOptionPane.NO_OPTION)
@@ -129,7 +128,7 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     	rubberImg.setText("Rubber");
     	rubberImg.setToolTipText("Rubber feature. Erase only what you want to.");
     	rubberImg.addActionListener(new ActionListener(){
-    		@Override
+
     		public void actionPerformed(ActionEvent e) {
     			
     			rubberToggle=!rubberToggle;
@@ -148,7 +147,7 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     	sendAllImg.setText("Send");
     	sendAllImg.setToolTipText("Send your draw to the server.");
     	sendAllImg.addActionListener(new ActionListener(){
-    		@Override
+
     		public void actionPerformed(ActionEvent e) {
     			String snd = IRCIvelaClientStringUtils.generateInfoString(drawn);
     			
@@ -182,7 +181,7 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     	updateImg.setText("Update");
     	updateImg.setToolTipText("Update the BlackBoard with a new draw.");
     	updateImg.addActionListener(new ActionListener(){
-    		@Override
+
     		public void actionPerformed(ActionEvent e) {
     			
     			try {
@@ -201,7 +200,7 @@ public class FrDrw2FS extends JPanel implements MouseListener, MouseMotionListen
     	testButton.setText("Test");
     	testButton.setToolTipText("Test button.");
     	testButton.addActionListener(new ActionListener(){
-    		@Override
+
     		public void actionPerformed(ActionEvent e) {
     			 
     			chatPanel.getSession().close("Closed browser.");

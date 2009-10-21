@@ -12,7 +12,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
-import org.jdamico.ircivelaclient.config.Constants;
+import org.jdamico.ircivelaclient.view.StaticData;
 
 public class ServletConnection {
 
@@ -67,7 +67,7 @@ public class ServletConnection {
 		String response = "";
 		boolean eof = false;
 
-		URL url = new URL(Constants.REMOTE_FILE_PATH);
+		URL url = new URL(StaticData.remoteFile);
 
 		InputStream is = url.openStream();
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));

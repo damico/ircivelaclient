@@ -148,13 +148,11 @@ public class ListenConversation extends DefaultIRCEventListener implements Runna
 	 
 	//Observer pattern methods
 	
-	@Override
 	public void addObserver(Observer observer) {
 		 
 		this.observerList.add(observer);
 	}
 
-	@Override
 	public void notifyObservers(Object arg) {
 		
 		for(Observer observer : this.observerList){
