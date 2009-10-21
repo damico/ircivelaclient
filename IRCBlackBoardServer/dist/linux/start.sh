@@ -1,0 +1,1 @@
+ java -classpath lib/jetty-6.1.0.jar:lib/jetty-embedded-6.1.5.jar:lib/jetty-util-6.1.0.jar:lib/servlet-api-2.5.jar:ircblackboardserver.jar org.jdamico.ircblackboardserver.sys.Launch
