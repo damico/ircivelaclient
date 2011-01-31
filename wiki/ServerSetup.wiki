@@ -1,4 +1,6 @@
-#summary One-sentence summary of this page.
+#summary Irc server basic setup for ircivelaclient
 
-ircd-irc2
-The original IRCNet IRC server daemon
+
+ * Install package ircd-irc2 (The original IRCNet IRC server daemon)
+ * Edit /etc/ircd/ircd.conf:
+    * Change <serverhost> <ipaddress> by your server settings:
